@@ -5,15 +5,14 @@
 #include <stdio.h>
 
 namespace Pointer {
-  
+ 
   /** Exception genere lors d'un debordement
    */
   class ArrayIndexOutOfBoundsException{
   private :
     string _error_value;
   public:
-    ArrayIndexOutOfBoundsException(string
-error_value=string("")):_error_value(error_value){}
+    ArrayIndexOutOfBoundsException(string error_value=string("")):_error_value(error_value){}
     ArrayIndexOutOfBoundsException(int error_value) {
       char tmp[20];
       sprintf(tmp,"%d",error_value);

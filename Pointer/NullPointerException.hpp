@@ -14,6 +14,5 @@ error_location=string("")):_error_location(error_location){}
     string getMessage() { return "The pointer is Null"+_error_location; }
   };
 };
-  
+ 
 #endif
-
