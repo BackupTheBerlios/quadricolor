@@ -8,7 +8,7 @@
  */
 class NotEnoughSpaceException{
 public:
-  string getMessage(){ return "Not enough space to load the image in the cache."; }
+  string getMessage(){ return string("Not enough space to load the image in the cache."); }
 };
 
 #endif

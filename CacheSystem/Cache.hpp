@@ -1,13 +1,16 @@
 #ifndef CACHE_HPP
 #define CACHE_HPP
 
+#include "NotEnoughSpaceException.hpp"
+#include "RemovalImpossibleException.hpp"
+
 namespace CacheSystem{
   /**
    * T = smart pointer on the wanted image-object
    * K = key which can identify an image-object
    * Loader = the type of the loader that will be used
    */
-  template <class T, class K, class Loader>  
+  template<class T, class K, class Loader>  
   class Cache{
   private:
     /**
@@ -42,7 +45,7 @@ namespace CacheSystem{
     /**
      * Frees some objects while there isn't enough space.
      */
-    virtual void freeSomeMemory() throw (NotEnoughSpaceException), (RemovalImpossibleException) =0;
+    virtual void freeSomeMemory() throw (NotEnoughSpaceException, RemovalImpossibleException) =0;
     
   public:
     /**
