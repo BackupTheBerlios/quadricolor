@@ -1,0 +1,25 @@
+\section{Interface utilisateur}
+
+Nous avons opté pour une interface simple en mode graphique.
+Pour cela, nous avons utiliser la librairie QT.
+Notre interface possède
+\begin{itemize}
+\item un menu qui permet d'ouvrir un fichier image (grâce à un popup menu)
+\item une liste contenant les images chargées, permettant ainsi un accès
+rapide.\\ Cette liste ne représente pas les objets contenus dans le
+cache. Ces derniers sont affichés dans le terminal.
+\item une zone réservée à l'affichage de l'image
+\end{itemize}
+
+Le visualisateur a besoin d'un type QImage. Ce dernier est
+passé comme template au Loader qui peut ainsi créer une image correct.\\\\
+
+\begin{figure}[!htp]
+  \label{interface}
+    \begin{center}
+      	\includegraphics[width=13cm, height=8cm]{view.eps}
+      \caption[Capture d'écran]{L'interface utilisateur}
+    \end{center}
+\end{figure}	
+
+

@@ -1,0 +1,44 @@
+\documentclass[12pt, twoside, a4paper]{report}
+\pagestyle{headings}
+
+\usepackage[latin1]{inputenc}
+\usepackage[french]{babel}
+\usepackage{latexsym}
+\usepackage{graphics}
+\usepackage[dvips]{graphicx}
+
+\oddsidemargin 1 cm
+\evensidemargin 1 cm
+\textwidth 15 cm
+\topmargin 0 cm
+\textheight 22.5 cm
+
+\newfont{\policecommande}{cmtex10}
+
+\title{{\bf Rapport de projet}\\Cache Générique et Smart Pointer}
+\author{Matthieu BRIEND\\ Philipe VAN-GOOR\\ Rodrigue TCHUITCHEU\\ Batoussa MOUGAMADOU}
+\date{Maitrise-IUP3 2002-2003\\Informatique et Mathématiques}
+
+\special{! userdict begin /bop-hook{
+ stroke gsave
+       80 80 translate
+       90 rotate
+       /Helvetica findfont
+       50 scalefont setfont
+       0 0 moveto
+       0.9 setgray
+       (Programmation Generique) show
+       grestore} def end}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+% Visualisateur
+\chapter{Installation et mode d'emploi}
+\input{install_exec}
+\chapter{Principes de fonctionnement des différentes composantes}
+\input{visualisateur}
+\input{description_cache}
+\input{smart_pointer}
+\end{document}

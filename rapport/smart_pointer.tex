@@ -1,0 +1,40 @@
+\section{Le smart pointer}
+Salut je me présente, je suis en Maitrise d'informatique et je suis à
+la recherche d'un travail renumeré avec vacances garanties, en
+prèvision de mon DESS que je n'aurais pas sachant qu'on aura sera en
+concurrence avec des brels qui auront de meilleures moyennes parce
+qu'ils auront le temps de terminer le peu de projets.
+Et à quoi bon faire un stage si on est à plein temps à la fac.
+
+Un Smart Pointer est un objet qui encapsule un pointeur et qui teste
+les accès en mémoire sur cet objet. Mais malgré tout sa manipulation
+reste parfois ambigüe (differente de celles d'un vrai pointeur) \\par ex:
+{\policecommande \\void *p;\\SmartPointer sp1(p);\\SmartPointer
+*sp2(p);\\return (*sp1==*(*sp2);//renvoit true }
+
+Un Smart Poiter est composé de 2 parties : le Smart Pointeur en tant
+que tel (la partie qui gere les accès) et un Reference Counter qui
+peut être partagé par plusieurs Smart Pointer.
+
+\subsection{Presentation des classes}
+Toutes les classes à l'exception d'une se trouve dans le package Pointer.
+Nous avons 2 classes de Smart Pointer:
+\begin{itemize}
+\item StandardSmartPointer (protège les accès en levant une exception,
+offre des accès synchronisés à l'aide de mutex, et offre les
+fonctionnalitées de base d'un Smart Pointer),
+\item et TabularSmartPointer.
+\end{itemize}
+2 classes de Reference Counter:
+\begin{itemize}
+\item DefaultReferenceCounter,
+\item et CacheReferenceCounter (dans le package CacheSystem).
+\end{itemize}
+et 2 exceptions:
+\begin{itemize}
+\item NullPointerException,
+\item et ArrayIndexOutOfBoundsException.
+\end{itemize}
+
+
+

@@ -1,0 +1,84 @@
+\section{Le cache}
+\subsection{Principe et intérêt d'un cache}
+L'accès à une ressource stockée sur le disque demande beaucoup de temps
+par rapport aux capacités des processeurs actuels. Il est donc
+préférable d'optimiser les temps d'accès. Cela peut être fait en
+stockant l'objet en question dans un cache, placé en mémoire. Les
+temps d'accès s'en trouvent considérablement réduits.
+
+Lors de ce projet, nous avons implémenté deux types de cache: le cache
+FIFO et le cache le plus ancien est supprimé.
+
+\subsection{Description du fonctionnement des caches}
+\subsubsection{Principes communs aux caches}
+Les deux caches que nous avons implémenté ont des propriétés
+communes.
+
+La première a trait avec le fonctionnement. Le
+visualisateur(l'interface graphique) demande un objet au cache, ici
+une image. Si l'image est présente dans le cache, celui-ci renvoie un
+smart pointer sur cet objet. Sinon, le cache demande à un chargeur de
+lui renvoyer l'objet(le chargeur est passé en paramètre du
+constructeur du cache). Au passage, le cache en profite pour libérer un
+peu de mémoire en supprimant les objets en trop(stratégie définie par
+le type de cache).
+
+La deuxième réside dans le stockage des smart pointers. Les deux
+caches utilisent une map. Pour déterminer l'ordre d'élimination des
+objets stockés, une deuxième structure est utilisée, qui dépend
+du type de cache.
+
+Nous aurions pu améliorer notre système de cache en écrivant une classe
+contenant uniquement la map, commune aux deux types de
+cache, et une autre gérant la libération des objets. Cela aurait donné
+un programme plus souple et récupérable.
+
+Nous avions essayé de faire une sorte de classe abstraite pour les
+deux caches. Malheureusement, nous avons eu trop de problèmes de
+compilation pour trop peu de temps. Nous avons donc préféré abandonner
+cette idée.
+
+Le chargement en mémoire et l'intégration du cache dans l'application
+est décrit dans la figure \ref{fonctionnementcache}.
+
+\begin{figure}[!htp]
+  \label{fonctionnementcache}
+    \begin{center}
+      	\includegraphics[width=13cm, height=12cm]{fonctionnement_cache.eps}
+      \caption[Fonctionnement du cache]{Positionnement du cache dans l'application}
+    \end{center}
+\end{figure}	
+
+Ce qui différencie les deux types de cache est leur façon de libérer
+les objets en mémoire.
+
+
+\subsubsection{Le cache FIFO}
+Le cache FIFO utilise une file pour sa stratégie de libération de la
+mémoire.
+
+A chaque ajout d'objet, le cache insère son smartpointer dans une
+file, appelée {\it file des libérables}. Celle-ci contient tous les
+objets qui peuvent être libérables. Dès que le cache a besoin de
+libérer de la mémoire, il enlève le premier élément de la file. Les
+premiers libérables sont donc les premiers à avoir été insérés.
+
+\subsubsection{Le cache Plus anciennement utilisé est supprimé}
+Ce cache utilise une liste de pairs (pointeur sur l'objet dans la
+map - priorité).
+
+A chaque ajout d'objet, son smart pointeur est ajouté dans la
+map. Puis un pointeur sur le smart pointeur est inséré dans la liste
+des libérables avec une priorité de 0. Cette dernière opération est
+effectuée par le smart pointer qui appelle la méthode d'ajout
+d'éléments à la liste des libérables.
+
+Lorsqu'il est nécessaire de libérer de la mémoire(c'est-à-dire, quand
+il y a trop d'objets dans le cache ou quand la taille en mémoire
+dépasse le seuil autorisé), le cache supprime l'objet qui a la
+priorité la plus haute.
+
+Lorsqu'un objet est déjà présent, on ``secoue'' la liste des
+libérables: tous les objets présents dans cette liste ont leur
+priorité qui augmente, sauf celui que l'utilisateur vient de
+demander.
