@@ -31,7 +31,7 @@ void MyWidget::add(const QString &f){
 }
 
 void MyWidget::repaint(){
-  QImage backImage = QImage(QString("grey.jpg"));
+  QImage backImage = QImage(QString("binary"));
   // Draw the background image
   QPainter  pGrey;
   pGrey.begin(this);
