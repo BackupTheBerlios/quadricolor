@@ -1,14 +1,16 @@
-#include "../Pointer/DefaultReferenceCounter.hpp"
+#ifndef CACHE_REFERENCE_COUNTER_HPP
+#define CACHE_REFERENCE_COUNTER_HPP
 
-using namespace Pointer;
+#include "DefaultReferenceCounter.hpp"
 
 namespace CacheSystem {
-  template<class C,class T>
-  class CacheReferenceCounter : public DefaultReferenceCounter {
+
+  template<class C,class O>
+  class CacheReferenceCounter : public Pointer::DefaultReferenceCounter<O> {
   private:
     C * _cache;
   public:
-    CacheReferenceCounter<C,T>(C &c,T *t):DefaultReferenceCounter<T>(t) {
+    CacheReferenceCounter<C,O>(C &c,O *object):Pointer::DefaultReferenceCounter<O>(object) {
       this->_cache=c;
     }
     
@@ -23,3 +25,6 @@ namespace CacheSystem {
     }
   };
 };
+
+#endif
+
