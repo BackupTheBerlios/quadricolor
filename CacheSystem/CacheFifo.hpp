@@ -6,7 +6,9 @@
 #include <queue>
 #include "../LoadingSystem/Loader.hpp"
 #include "NotEnoughSpaceException.hpp"
+#include "ParametersNotInitialisedException.hpp"
 #include "RemovalImpossibleException.hpp"
+#include "myassert.h"
 //#include <hash_map>
 //using namespace loader;
 
@@ -27,27 +29,38 @@ namespace CacheSystem{
   class CacheFifo {
   private:
     ///////Attributes
-    int               _total_bytes; //Total number of bytes contained in the cache
+    int               _nb_of_bytes; //Total number of bytes contained in the cache
     int               _max_bytes;   //Maximum number of bytes
     
     int               _nb_of_images;     //Number of images contained in the cache
-    int               _max_nb_of_images; //Maximum number of images allowed
+    int               _max_images; //Maximum number of images allowed
     
     L                 _loader;      //The object that will enable this cache to load files in memory
     
-    //Contains all the key/references to a Reference Counter
-    map<K, T>         _image_set;
+    map<K, T>         _image_set;   //Contains all the key/references to a Reference Counter
     queue<const K*>   _freeable;    //Contains all the Reference Counters that are freeable
+    
+    
     
     ///////Methods
     /**
      * Adds an image to the list of images.
      * Returns true if the operation succeeded, false otherwise.
      */
-    bool addImageObject(const K &key, const T &image){
-      this->_image_set[key] = image;
-      addToFreeable(key);
-      return true;
+    bool addImageObject(const K &key, const T &image)
+      throw (NotEnoughSpaceException){
+      int image_size = this->_loader.getSize(key);
+      
+      if( (image_size+this->_nb_of_bytes<this->_max_bytes)&&
+	  (_nb_of_images+1<this->_max_images) ){
+	
+	this->_image_set[key] = image;
+	addToFreeable(key);
+	this->_nb_of_images++;
+	this->_nb_of_bytes += image_size;
+      }
+      else
+	throw NotEnoughSpaceException();
     }
     
     /**
@@ -77,15 +90,21 @@ namespace CacheSystem{
       return true;
     }
     
-    void freeSomeMemory() throw (NotEnoughSpaceException, RemovalImpossibleException)
+    
+    /**
+     * Frees some memory. It removes some of the objects contained in this cache.
+     */
+    void freeSomeMemory() throw (NotEnoughSpaceException,
+				 RemovalImpossibleException)
     {
-      K * image2bfreed;
-      
-      /* while there isn't enough space, we delete the first image-objects */
-      while(_nb_of_images>=_max_nb_of_images || _total_bytes>=_max_bytes)
-	{//if there's too much image in cache
-	  if(this->_freeable.empty())//if the FIFO is empty, the user didn't grant enough space for the cache
-	    throw NotEnoughSpaceException();/* QUEL COMPORTEMENT ADOPTER S'IL N'Y A PAS ASSEZ DE PLACE? */
+      const K * image2bfreed;
+      printf("nb images: %d\tnb d'octets: %d\n", this->_nb_of_images, this->_nb_of_bytes);
+      //while there isn't enough space, we delete the first image-objects
+      while(_nb_of_images>=_max_images || _nb_of_bytes>=_max_bytes)
+	{ //if there's too much image in cache
+	  if(this->_freeable.empty())//if the FIFO is empty, the user didn't grant 
+	    throw NotEnoughSpaceException(); //enough space for the cache
+	  
 	  image2bfreed = _freeable.front();
 	  //remove an image from the cache
 	  if(!removeImageObject(*image2bfreed))
@@ -96,9 +115,28 @@ namespace CacheSystem{
     }
     
   public:
-    CacheFifo(const L &loader):_loader(loader) {}
+    /**
+     * Builds a cache with the given loader and sets the bounds of the cache
+     * (total number of bytes, maximum authorized number of bytes, number of
+     * images, maximum number of images).
+     */
+    CacheFifo(const L &loader,
+	      int max_bytes, int max_nb_of_images):_loader(loader),
+						   _nb_of_bytes(0),
+						   _max_bytes(max_bytes),
+						   _nb_of_images(0),
+						   _max_images(max_nb_of_images){}
     ~CacheFifo(){}
     
+    /**
+     * Sets the bounds of the cache(total number of bytes, maximum authorized number of
+     * bytes, number of images, maximum number of images).
+     */
+    void setBounds(int max_bytes, int max_nb_of_images)
+    {
+      this->_max_bytes  = max_bytes;
+      this->_max_images = max_nb_of_images;
+    }
     
     /**
      * Go and fetch an object-image. Its behaviour depends of the implementing subclasses.
@@ -109,7 +147,7 @@ namespace CacheSystem{
       map<K, T>::iterator index = (this->_image_set).find(key);
       if(index == this->_image_set.end())
 	{ //the object-image isn't in the image set
-	  //freeSomeMemory(); //eventually, free some memory
+	  freeSomeMemory(); //eventually, free some memory
 	  //ASK THE LOADER to fetch the image
 	  T image = this->_loader.getObject(key);
 	  addImageObject(key, image); //ADD THE NEW image to the cache
