@@ -4,7 +4,9 @@
 #include <string>
 #include <map>
 #include <queue>
-#include "../LoadingSystem/Loader.hpp"
+#include "StandardSmartPointer.hpp"
+#include "CacheReferenceCounter.hpp"
+#include "Loader.hpp"
 #include "NotEnoughSpaceException.hpp"
 #include "RemovalImpossibleException.hpp"
 
@@ -65,17 +67,6 @@ namespace CacheSystem{
     }
     
     /**
-     * Adds the image-object to the list of the freeable objects.
-     * Returns true if the operation succeeded, false otherwise.
-     */
-    bool addToFreeable(const K *key){
-      this->_freeable.push(key); //We only need a pointer on a key
-      cout <<"L79 -->"<< *(_freeable.back()) << endl;
-
-      return true;
-    }
-    
-    /**
      * Removes the image-object from the list of the freeable objects.
      * Returns true if the operation succeeded, false otherwise.
      */
@@ -92,7 +83,7 @@ namespace CacheSystem{
 						  RemovalImpossibleException)
     {
       const K * image2bfreed;
-      printf("nb images: %d\tnb d'octets: %d\n", this->_nb_of_images, this->_nb_of_bytes);
+      
       //while there isn't enough space, we delete the first image-objects
       while(_nb_of_images+1>=_max_images || _nb_of_bytes+new_file_size>=_max_bytes)
 	{ //if there's too much image in cache
@@ -100,7 +91,6 @@ namespace CacheSystem{
 	    throw NotEnoughSpaceException(); //enough space for the cache
 	  image2bfreed = this->_freeable.front();
 	  int image2bfreed_size = this->_loader.getSize(*image2bfreed);
-	  cout <<"On veut virer----------->" <<*image2bfreed <<"\t" <<image2bfreed_size <<endl;
 	  
 	  //remove an image from the cache
 	  if(!removeImageObject(image2bfreed))
@@ -118,11 +108,11 @@ namespace CacheSystem{
      * images, maximum number of images).
      */
     CacheFifo(const L &loader,
-	      int max_bytes, int max_nb_of_images):_loader(loader),
-						   _nb_of_bytes(0),
+	      int max_bytes, int max_nb_of_images):_nb_of_bytes(0),
 						   _max_bytes(max_bytes),
 						   _nb_of_images(0),
-						   _max_images(max_nb_of_images){}
+						   _max_images(max_nb_of_images),
+						   _loader(loader){}
     ~CacheFifo(){}
     
     /**
@@ -153,28 +143,38 @@ namespace CacheSystem{
       this->_max_bytes  = max_bytes;
       this->_max_images = max_nb_of_images;
     }
+        
+    
+    /**
+     * Adds the image-object to the list of the freeable objects.
+     * Returns true if the operation succeeded, false otherwise.
+     */
+    bool addToFreeable(const K *key){
+      this->_freeable.push(key); //We only need a pointer on a key
+      
+      return true;
+    }
     
     
     /**
      * Go and fetch an object-image. Its behaviour depends of the implementing subclasses.
      * Must be called by the user interface-side.
      */
-    T getImageObject(const K &key) throw (NotEnoughSpaceException,
+    T *getImageObject(const K &key) throw (NotEnoughSpaceException,
 					  RemovalImpossibleException){
       map<K, T>::iterator index = this->_image_set.find(key);
       if(index == this->_image_set.end())
 	{ //the object-image isn't in the image set
 	  //ASK THE LOADER to fetch the image
-	  T image = this->_loader.getObject(key);
+	  Pointer::StandardSmartPointer<CacheReferenceCounter<CacheFifo,T>, T> image ( new CacheReferenceCounter<CacheFifo,T>(this, this->_loader.getObject(key) ) );
 	  try{
 	    freeSomeMemory(this->_loader.getSize(key)); //eventually, free some memory
 	    addImageObject(key, image); //ADD THE NEW image to the cache
 	    index = this->_image_set.find(key);
-	    puts("Image chargée");
 	  }catch(NotEnoughSpaceException e)
 	    {cerr<<e.getMessage()<<"\nImage "<<key<<" hasn't been added in the cache."; return image;}
 	}
-      return (*index).second;
+      return &(*index).second;
     }
   };
 };
