@@ -1,0 +1,58 @@
+\section{Loader}
+
+Le loader, comme son nom l'indique, est la partie du projet qui se
+charge de récupérer un objet sur le disque physique et de l'envoyer au
+cache.
+Le loader est appelé par le cache lorsque le visualisateur demande à
+ce dernier une ressource dont il ne dispose pas en mémoire, mais aussi
+si le cache a besoin de connaître la taille physique qu'un fichier
+image occupe sur le disque dur.\\
+
+Afin de charger et visualiser les images, nous avons hésité pendant un
+moment entre les classes de la librairie Magick++ et celles de Qt.
+Notre choix s'est finalement porté sur Qt car en plus de la
+compatibilité avec le visualisateur (lui aussi réalisé avec Qt), les
+librairies QImage et QFile de Qt nous permettaient d'obtenir assez
+rapidement les résultats escomptés qui sont:
+
+\begin{itemize}
+\item Charger une image depuis le disque physique en vue la visualiser
+\item Obtenir la taille physique du fichier image
+\end{itemize}
+
+Ce résultat peut être aussi atteint en utilisant la classe Image de
+Magick++, mais cette classe étant plus adapté pour le traitement de
+l'image (zoom, redimensionnement de l'image...), la compilation était
+plus longue qu'avec Qt.
+
+Nous avons cependant implanté un Loader générique pouvant fonctionner
+avec l'une ou l'autre librairie en fonction de la classe qui est
+passée dans le template suivant : 
+
+{\policecommande template<class K, class Image_Type, class File_Type>}
+
+\subsection{Chargement d'un objet}
+
+Pour charger l'objet, nous avons besoin d'une clé K permettant de
+l'identifier. Dans le cadre de ce projet, la clé est le chemin d'accès
+(path + nom) du fichier image. Si la clé fournie est invalide ou ne
+correspond pas à un fichier image, la méthode de chargement lève une
+exception: {\policecommande ImageNotFoundException}.
+Sinon on retourne un objet de type Image_Type (QImage, dans le cadre
+de ce projet).
+
+Méthode à appelé: getObject. \\
+
+\subsection{Taille physique d'un objet}
+
+Comme pour le chargement de l'objet, nous avons besoin d'une clé K
+pour l'identifier. Nous pouvons donc créer un objet de type File_Type
+nous permettant d'obtenir la taille du fichier sous la forme d'un
+entier que l'on retourne.
+
+Méthode à appelé: getSize. \\
+
+
+
+
+
