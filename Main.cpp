@@ -18,8 +18,7 @@ int main(int argc, char ** argv)
       fprintf(stderr, "Syntaxe: quadricolor <image file name>\n");
       exit(EXIT_FAILURE);
     }
-  string file_name;
-  cout << file_name << endl;
+  string * file_name;
   CacheFifo<Image, string, Loader<string> > cache =
     CacheFifo<Image, string, Loader<string> >(l, 70000, 3);
   Image pic;
@@ -28,9 +27,10 @@ int main(int argc, char ** argv)
   try{
     for(int i=1; i<argc; i++){
       cout <<endl;
-      file_name = string(argv[i]);
-      pic = cache.getImageObject(file_name);
-      cout << "The size of the image " << file_name << " is " << l.getSize(file_name) << endl;
+      file_name = new string(argv[i]);
+      cout <<"Nom du fichier: " <<*file_name <<endl;
+      pic = cache.getImageObject(*file_name);
+      cout << "The size of the image " << *file_name << " is " << l.getSize(*file_name) << endl;
       cout <<"Les fichiers contenus dans le cache:" <<endl;
       cache.initIterator();
       while((present_files=cache.getEachKeyStored())!="")
