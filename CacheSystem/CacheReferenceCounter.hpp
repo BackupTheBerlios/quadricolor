@@ -20,7 +20,7 @@ namespace CacheSystem {
       _counter--;
       if( _counter <= 0 ) {
 	_counter++;
-	_cache->addToFreeAble(C);
+	_cache->addToFreeAble(this);
       }
     }
   };
