@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <iostream>
-#include <Magick++.h>
 #include <string>
 #include "LoadingSystem/Loader.hpp"
 #include "CacheSystem/CacheFifo.hpp"
@@ -8,26 +7,25 @@
 using namespace CacheSystem;
 using namespace std;
 using namespace loader;
-using namespace Magick;
 
 int main(int argc, char ** argv)
 {
-  Loader<string> l;
+  Loader<QString> l;
   if(argc<2)
     {
       fprintf(stderr, "Syntaxe: quadricolor <image file name>\n");
       exit(EXIT_FAILURE);
     }
-  string * file_name;
-  CacheFifo<Image, string, Loader<string> > cache =
-    CacheFifo<Image, string, Loader<string> >(l, 70000, 3);
-  Image pic;
-  string present_files;
+  QString * file_name;
+  CacheFifo<QImage, QString, Loader<QString> > cache =
+    CacheFifo<QImage, QString, Loader<QString> >(l, 70000, 3);
+  QImage * pic;
+  QString present_files;
   
   try{
     for(int i=1; i<argc; i++){
       cout <<endl;
-      file_name = new string(argv[i]);
+      file_name = new QString(argv[i]);
       cout <<"Nom du fichier: " <<*file_name <<endl;
       pic = cache.getImageObject(*file_name);
       cout << "The size of the image " << *file_name << " is " << l.getSize(*file_name) << endl;
@@ -35,7 +33,7 @@ int main(int argc, char ** argv)
       cache.initIterator();
       while((present_files=cache.getEachKeyStored())!="")
 	cout<<present_files <<endl;      
-      //pic.display();
+      //pic->display();
     }
   }
   catch( ImageNotFoundException &e){ cout << e.getMessage() << endl;}

@@ -29,7 +29,7 @@ namespace loader{
     }
 
     // return the size on the disk of the file with that key.
-    int getSize(K &key){
+    int getSize(const K &key){
       QFile tmp_file(key);
       int tmp_size = tmp_file.size();
       return tmp_size;
@@ -39,7 +39,7 @@ namespace loader{
      * Read the file with the specified key and return a reference
      * on this objecy.
      */
-    QImage& getObject(K key) throw (ImageNotFoundException) {
+    QImage& getObject(const K & key) throw (ImageNotFoundException) {
       try {
 	//Read Image
 	//cout << "On lit l'image ->" << key << "<- " << endl;
@@ -50,8 +50,7 @@ namespace loader{
 	throw ImageNotFoundException(key);
       }
       return _object;
-    }
-    
+    }    
   };
 }
 #endif
