@@ -1,5 +1,5 @@
-#ifndef DefaultReferenceCounter_HPP
-#define DefaultReferenceCounter_HPP
+#ifndef DEFAULT_REFERENCE_COUNTER_HPP
+#define DEFAULT_REFERENCE_COUNTER_HPP
 
 #include <string>
 #include <pthread.h>
@@ -14,17 +14,17 @@ namespace Pointer {
     string getMessage() { return "The pointer is Null"+_error_location; }
   };
   
-  template<class T>
+  template<class O>
   class DefaultReferenceCounter {
   protected:
     int _counter;
-    T *_object;
+    O *_object;
     pthread_mutex_t *mut;
     
   public:
     /** Initialise le ReferenceCounter et cree un mutex
      */
-    DefaultReferenceCounter<T>(T *t):_counter(1),_object(t) {
+    DefaultReferenceCounter<O>(O *o):_counter(1),_object(o) {
       pthread_mutex_init(mut,NULL);
     }
 
@@ -55,13 +55,13 @@ namespace Pointer {
       pthread_mutex_unlock(mut);
     } 
     
-    T & getObject() throw(NullPointerException) {
+    O & getObject() throw(NullPointerException) {
       if( _object == 0 )
 	throw NullPointerException();
       return *_object;
     }
 
-    const T & getObject() const throw(NullPointerException) {
+    const O & getObject() const throw(NullPointerException) {
       if( _object == 0 )
 	throw NullPointerException();
       return *_object;

@@ -1,5 +1,5 @@
-#ifndef TabularSmartPointer_HPP
-#define TabularSmartPointer_HPP
+#ifndef TABULAR_SMART_POINTER_HPP
+#define TABULAR_SMART_POINTER_HPP
 
 #include <string>
 
@@ -32,7 +32,7 @@ namespace Pointer {
    * Leve une exception: ArrayIndexOutOfBoundsException lorsr de debordement.
    */
   template<class SP,class RC,class O>
-  class TabularSmartPointer:public Pointer::StandardSmartPointer {
+  class TabularSmartPointer:public Pointer::StandardSmartPointer<RC,O> {
   private:
     SP *sp; // tableau de SmartPointer
     int pos;
@@ -187,7 +187,7 @@ namespace Pointer {
     O * operator += (int address) {
       testIfIsAllowed(address);
       pos+=address;
-      return &this[0]
+      return &this[0];
     }
     
     /** Operateur -=

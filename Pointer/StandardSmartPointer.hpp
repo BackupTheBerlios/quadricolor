@@ -14,12 +14,19 @@ namespace Pointer {
     /*       Constructeur       */
     /****************************/
     
-    /** Constructeur
+    /** Constructeur sur ReferenceCounter
      */
     StandardSmartPointer<RC,O>(RC *drc):rc(drc) {
       rc->attach();
     }
 
+    /** Constructeur sur Pointer, il faut prèciser le ReferenceCounter à utiliser.
+     * On pourra le recuperer grâce à l'operateur de conversion.
+     */
+    StandardSmartPointer<RC,O>(O *o) {
+      rc = RC(o);
+      rc->attach();
+    }
 
     /****************************/
     /*       Destructeur        */
