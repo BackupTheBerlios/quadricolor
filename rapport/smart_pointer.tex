@@ -72,9 +72,36 @@ Il fournit:
 Deux Smart Pointeur de type differents doivent partager le même type de Reference Counter pour être mis en relation et ceci dans le but d'avoir un comportement identique des 2 cotés.\\
 Lors de l'utilisation d'un Smart Pointeur par au moins 2 threads (concurrence), c'est au programmeur de gerer l'appel des méthodes lock et unlock sur l'objet. En effet le Smart Pointeur n'a pas la possibilité de savoir quand est ce que la ressource n'est plus utilisée. Pour illustrer, on peut imaginer les 2 cas d'utilisation suivant:
 {\policecommande \\void *p;\\SmartPointer sp1(p);// faut'il locker à la construction la ressource ?\\*sp1.truc();// ou plutôt à l'utilisation, et quand faut-il liberer ?}
-{\policecommande \\void *p;\\SmartPointer sp1(p);// faut'il locker à la construction la ressource ?\\void *g=*sp1;//Dans ce cas plus de contrôle sir l'objet}
+{\policecommande \\void *p;\\SmartPointer sp1(p);// faut'il locker à la construction la ressource ?\\void *g=*sp1;//Dans ce cas plus de contrôle sur l'objet}
 
 \subsubsection{TabularSmartPointer}
-On a séparé les 2 classes, parce qu'on a jugé inutile et dangereux d'utiliser les fonctionalitées d'un tableau lorsque le Smart Pointer n'est pas alloué pour être un tableau. 
+On a séparé les 2 classes, parce qu'on a jugé inutile et dangereux
+d'utiliser les fonctionalitées d'un tableau lorsque le Smart Pointer
+n'est pas alloué pour être un tableau.\\
+Notre classe marche un peu à la manière de l'interface List en Java.
+On l'alloue avec une taille nulle et ensuite on ajoute les
+élèments. On peut aussi enlever des élèment.
+On ne l'alloue pas avec une taille non nulle parce que dans ce cas se
+pose le problème de savoir si les objets presents doivent etre alloué
+ou pas et si oui est il pratique de les transmettre à l'initialisation.\\
+Notre tableaux étant un SmartPointer, c'est des SmartPointer
+encapsulant l'objet qui sont ajoutés. On peut donc détruire un tableau
+sans perdre les objets si ils sont referencés par d'autres Smart
+Pointer.
+Par rapport au StandardSmartPointer on dispose de :
+\begin{itemize}
+\item un opérateur d'affectation  spécifique pour copier un autre
+tableau,
+\item des opérateurs pour changer ``l'adresse'' de la 1er
+case ( $+ , - , += , -= , ++ , --$ ), on verifie que la position est
+accessible et sinon on lève une ArrayIndexOutOfBoundsException,
+\item on surcharge les opérateurs de comparaison ( $== , !=$ ) pour
+tester l'égalité entre 2 tableaux, en lançant l'operateur == sur les objets encapsulés,
+\item et l'opérateur [] pour recuperer le pointeur à une position
+particulière, il est different de la méthodes get qu'il renvoit le
+ReferenceCounter.
 
+\end{itemize}
 
+Le TabularSmartPointer étendant le StandardSmartPointer on peut
+toujours l'utiliser comme tel.

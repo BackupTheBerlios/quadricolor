@@ -98,6 +98,35 @@ tableau
             
       return *this;
     }
+
+    
+    /****************************/
+    /*      Operateurs          */
+    /****************************/
+    
+    /** Operateur +
+     */
+    O & operator + (int index) {
+      testIfIsAllowed(index);
+      return get(index).getObject();
+    }
+
+    const O & operator + (int index) const {
+      testIfIsAllowed(index);
+      return get(index).getObject();
+    }
+
+    /** Operateur -
+     */
+    O & operator - (int index) {
+      testIfIsAllowed(-index);
+      return get(-index).getObject();
+    }
+
+    const O & operator - (int index) const {
+       testIfIsAllowed(-index);
+       return get(-index).getObject();
+    }
     
     /** Operateur +=
      */
@@ -190,36 +219,6 @@ tableau
       testIfIsAllowed(index);
       return get(index).getObject();
     }
-
-
-    /****************************/
-    /*      Operateurs          */
-    /****************************/
-    
-    /** Operateur +
-     */
-    O & operator + (int index) {
-      testIfIsAllowed(index);
-      return get(index).getObject();
-    }
-
-    const O & operator + (int index) const {
-      testIfIsAllowed(index);
-      return get(index).getObject();
-    }
-
-    /** Operateur -
-     */
-    O & operator - (int index) {
-      testIfIsAllowed(-index);
-      return get(-index).getObject();
-    }
-
-    const O & operator - (int index) const {
-       testIfIsAllowed(-index);
-       return get(-index).getObject();
-    }
-         
   };
 
 };
