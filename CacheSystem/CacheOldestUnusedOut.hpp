@@ -8,7 +8,7 @@ namespace CacheSystem{
   /**
    * T = smart pointer on the wanted image-object
    * K = key which can identify an image-object
-   * Loader = the type of the loader that will be used
+   * L = the type of the loader that will be used
    */
   /**
    * This cache implements a mechanism of cache in which all the image-objects are stored in
@@ -16,8 +16,8 @@ namespace CacheSystem{
    * in this "queue", possess a priority. When there isn't enough space, the image-object
    * which has the highest priority is removed.
    */
-  template <class T, class K, class Loader>
-  class CacheOldestUnusedOut: public CacheSystem::Cache<T, K, Loader>{
+  template <class T, class K, class L>
+  class CacheOldestUnusedOut: public CacheSystem::Cache<T, K, L>{
   private:
     ///////Attributes
     int      _total_bytes; //Total number of bytes contained in the cache
@@ -26,7 +26,7 @@ namespace CacheSystem{
     int      _nb_of_images;     //Number of images contained in the cache
     int      _max_nb_of_images; //Maximum number of images allowed
     
-    Loader   _loader;      //The object that will enable this cache to load files in memory
+    L   _loader;      //The object that will enable this cache to load files in memory
     //Contains all the key/references to a Reference Counter
     hash_map<const K, T, hash<const K> >  _image_set;
     list<pair<K*, int> > _freeable;    //Contains the key of all the freeable elements
@@ -131,7 +131,7 @@ namespace CacheSystem{
     }
     
   public:
-    CacheOldestUnusedOut(const Loader &loader):_loader(loader){}
+    CacheOldestUnusedOut(const L &loader):_loader(loader){}
     ~CacheOldestUnusedOut(){}
     
     
