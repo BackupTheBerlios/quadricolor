@@ -18,7 +18,7 @@ que tel (la partie qui gere les accès) et un Reference Counter qui
 peut être partagé par plusieurs Smart Pointer.
 
 \subsection{Presentation des classes}
-Toutes les classes à l'exception d'une se trouve dans le package Pointer.
+Toutes les classes à l'exception d'une se trouve dans le package Pointer.\\
 Nous avons 2 classes de Smart Pointer:
 \begin{itemize}
 \item StandardSmartPointer (protège les accès en levant une exception,
@@ -37,14 +37,41 @@ et 2 exceptions:
 \item et ArrayIndexOutOfBoundsException.
 \end{itemize}
 
-\subsection{Description du fonctionnement des caches}
+Nous avons volontairement choisi de permettre pour certaines méthodes la redefinition et pour d'autres pas. Dans ces cas  car on a jugé inutile voir dangeureux leur redefinition. Ainsi on ne peut pas redefinir les opérateurs de conversion.
+Les noms des templates sont assez explicites : RC pour Reference Counter, O pour l'objet (donc n'importe quel type) et SP pour Smart Pointer.
+
+\subsection{Les Reference Counter}
 
 \subsubsection{DefaultReferenceCounter}
-C'est le ReferenceCounter par défaut, avec les fonctionnalitées de
-bases pour pouvoir implementer ensuite le StandardSmartPointer.\\
-Il encapsule le pointer.
+C'est le ReferenceCounter par défaut, suffisant pour être utilisé par notre StandardSmartPointer.\\
+Il encapsule le pointeur.
 Il dispose de 2 méthodes pour y attacher et detacher un Smart Pointer.
 Il dispose de 3 méthodes pour gerer les accès concurrent sur le
-pointer.
+pointer. On utlise les fonctions de la librairie $<pthread.h>$
 Il dispose de 2 méthodes (const et pas const) pour retourner le pointeur encapsulé.
 
+\subsubsection{CacheReferenceCounter}
+Dans le cas de l'utilisation avec le cache, on ne souhaite plus que le DefaultReferenceCounter libere la ressource une fois que plus aucun Smart Pointer ne pointe dessus. On a donc redefini la méthode detach pour que celle-ci appelle une fonction du cache à la place. On a aussi utiliser un constructeur spécifique, adapter à son utilisation par le cache.
+
+\subsection{Les Smart Pointer}
+
+Tout nos Smart Pointer fonctionne avec un Reference Counter.
+Quand 2 Smart Pointer se partage un pointeur, c'est le Reference Counter qu'il se partage en réalité, à condition que le même Reference Counter est été transmis au deux.
+
+\subsubsection{StandardSmartPointer}
+Il a besoin au minimum des fonctionnalités du DefaultReferenceCounter.
+Ce Smart Pointer fournit les fonctionnalités de 3 des 4 Smart Pointer décrit dans l'énoncé.
+Il fournit: 
+\begin{itemize}
+\item les opérateurs spécifiques au pointeurs ( $* , ->$ ),
+\item les opérateurs de comparaison ( $== , !=$ ) qui comparent les pointeurs encapsulés,
+\item l'opérateur d'affectation ( $=$ ) pour différentes utilisations,
+\item les opérateurs de conversion ( vers le type du pointeur ou vers le type du Reference Conversion choisi ),
+\item les fonctions d'accès concurrents.\\
+\end{itemize}
+Deux Smart Pointeur de type differents doivent partager le même type de Reference Counter pour être mis en relation et ceci dans le but d'avoir un comportement identique des 2 cotés.\\
+Lors de l'utilisation d'un Smart Pointeur par au moins 2 threads (concurrence), c'est au programmeur de gerer l'appel des méthodes lock et unlock sur l'objet. En effet le Smart Pointeur n'a pas la possibilité de savoir quand est ce que la ressource n'est plus utilisée. Pour illustrer, on peut imaginer les 2 cas d'utilisation suivant:
+{\policecommande \\void *p;\\SmartPointer sp1(p);// faut'il locker à la construction la ressource ?\\*sp1.truc();// ou plutôt à l'utilisation, et quand faut-il liberer ?}
+{\policecommande \\void *p;\\SmartPointer sp1(p);// faut'il locker à la construction la ressource ?\\void *g=*sp1;//Dans ce cas plus de contrôle sir l'objet}
+
+\subsubsection{TabularSmartPointer}
