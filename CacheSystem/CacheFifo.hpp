@@ -5,10 +5,11 @@
 #include <hash_map>
 #include <queue>
 #include "../LoadingSystem/Loader.hpp"
-#include "Cache.hpp"
+#include "NotEnoughSpaceException.hpp"
+#include "RemovalImpossibleException.hpp"
 
-using namespace loader;
-//using namespace CacheSystem;
+//using namespace loader;
+
 
 namespace CacheSystem{
   /**
@@ -16,21 +17,14 @@ namespace CacheSystem{
    * K = key which can identify an image-object
    * Loader = the type of the loader that will be used
    */
-  /*
-    template <class T, class K, class Loader>
-    typedef hash_map<const K, T, hash<const K> > TypeMap;
-    
-    template <class T, class K, class Loader>
-    typedef hash_map<const K, T, hash<const K> >::iterator MapIter;
-  */
   
   /**
    * This class implements a mechanism of cache in which all the freeable image-objects
    * are stored in a FIFO. That means that, if there isn't enough space, the cache will
    * remove the first image-object inserted in the FIFO.
    */
-  template<class T, class K, class Loader>
-  class CacheFifo:public CacheSystem::Cache<T, K, Loader> {
+  template<class T, class K, class L>
+  class CacheFifo {
   private:
     ///////Attributes
     int      _total_bytes; //Total number of bytes contained in the cache
@@ -39,11 +33,10 @@ namespace CacheSystem{
     int      _nb_of_images;     //Number of images contained in the cache
     int      _max_nb_of_images; //Maximum number of images allowed
     
-    Loader   _loader;      //The object that will enable this cache to load files in memory
-    //TypeMap  _image_set;   //Contains all the key/references to a Reference Counter
+    L   _loader;      //The object that will enable this cache to load files in memory
     
     //Contains all the key/references to a Reference Counter
-    hash_map<const K, T, hash<const K> >  _image_set;
+    hash_map<K, T, hash<K> >  _image_set;
     queue<const K*>   _freeable;    //Contains all the Reference Counters that are freeable
     
     ///////Methods
@@ -51,7 +44,7 @@ namespace CacheSystem{
      * Adds an image to the list of images.
      * Returns true if the operation succeeded, false otherwise.
      */
-    bool addImageObject(const K &key, const Image &image){
+    bool addImageObject(const K &key, const T &image){
       this->_image_set[key] = image;
       addToFreeable(key);
       return true;
@@ -103,24 +96,29 @@ namespace CacheSystem{
     }
     
   public:
-    CacheFifo(const Loader &loader):_loader(loader){}
+    CacheFifo(const L &loader):_loader(loader) {}
     ~CacheFifo(){}
     
     
     /**
-     * Go and fetch an object-image. It's behaviour depends of the implementing subclasses.
+     * Go and fetch an object-image. Its behaviour depends of the implementing subclasses.
      * Must be called by the user interface-side.
      */
-    T getImageObject(const K &key)const throw (NotEnoughSpaceException, RemovalImpossibleException){
-      //MapIter index = this->_image_set.find(key);
-      hash_map<const K, T, hash<const K> >::iterator index = this->_image_set.find(key);
-      if(index == this->_image_set.end())
+    T getImageObject(K &key) throw (NotEnoughSpaceException,
+						RemovalImpossibleException){
+      hash_map<K, T, hash<K> >::iterator index = (this->_image_set).find(key);
+      //hash_map<K, T, hash<K> >::const_iterator index;
+      //this->_image_set.find(key);
+      /*if(index == this->_image_set.end())
 	{//the object-image isn't in the image set
-	  freeSomeMemory(); //eventually, free some memory
+	  //freeSomeMemory(); //eventually, free some memory
 	  //ASK THE LOADER to fetch the image
+	  Image image = this->_loader.getObject(key);
 	  addImageObject(key, image); //ADD THE NEW image to the cache
-	}
-      return *index;
+	  index = this->_image_set.find(key);
+	  }*/
+      //return (T)*index;
+      return 0;
     }
   };
 };
