@@ -1,10 +1,10 @@
 #include "MyWidget.hpp"
 
 MyWidget::MyWidget(QListBox *listBox){
-  this->setGeometry(0, 0, 500, 500);
+  this->setFixedSize(QSize(700, 500)); 
   this->_listBox = listBox;
   _listBox->reparent (this, QPoint(0, 30));
-  _listBox->setFixedSize(QSize(200, 200));
+  _listBox->setFixedSize(QSize(200, 500));
   
   // Signals connexions
   QObject::connect(listBox, SIGNAL(selected(const QString &)), this, SLOT(paint(const QString &)));
