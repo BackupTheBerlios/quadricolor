@@ -3,6 +3,23 @@
 
 namespace Pointer {
 
+  /** Ce SmartPointer contient les opérateurs de base *, -> des pointeurs.
+   * Tout les opérateurs permettant de manipuler les adresses on été retirés
+pour des raisons de sécurité.
+   * Le StandardSmartPointer est un pointeur simple qui ne permet pas de créer
+des tableaux.
+   * Ces opérateurs sont disponibles dans TabularSmartPointer où l'on a plus
+d'information sur la mémoire.
+   *
+   * Ce StandardSmartPointer offre à l'utilisateur la possibilité de gerer les
+accès concurrents à l'aide d'un mutex (voir lock(), trylock() et unlock()).
+   *
+   * On a la possibilté de recuperer le ReferenceCounter encapsulé par
+l'opérateur de conversion.
+   * Lorsque des méthodes sont disponibles à la fois dans le
+StandardSmartPointer et dans le ReferenceCounter, il est conseillé de choisir
+celles du StandardSmartPointer.
+   */
   template<class RC,class O>
   class StandardSmartPointer {
   private:
@@ -26,11 +43,12 @@ namespace Pointer {
       rc->attach();
     }
 
-    StandardSmartPointer<RC,O>(RC &drc):rc(drc) {
+    StandardSmartPointer<RC,O>(RC &drc):rc(&drc) {
       rc->attach();
     }
 
-    /** Constructeur sur Pointer, il faut prèciser le ReferenceCounter à utiliser.
+    /** Constructeur sur Pointer, il faut prèciser le ReferenceCounter à
+utiliser.
      * On pourra le recuperer grâce à l'operateur de conversion.
      */
     StandardSmartPointer<RC,O>(O *o) {
@@ -48,7 +66,8 @@ namespace Pointer {
     /****************************/
     
     virtual ~StandardSmartPointer() {
-      rc->detach();
+      if(rc)
+	rc->detach();
     }
   
     
@@ -58,13 +77,17 @@ namespace Pointer {
     void lock() const {
       rc->lock();
     }
-
-    void tryLock() const {
-      rc->trylock();
+    
+    /** voir dans le DefautReferenceCounter pour le type de retour.
+     */
+    int tryLock() const {
+      return rc->trylock();
     }
     
-    void unlock() const {
-      rc->unlock();
+    /** voir dans le DefautReferenceCounter pour le type de retour.
+     */
+    int unlock() const {
+      return rc->unlock();
     } 
     
     /****************************/
@@ -72,10 +95,15 @@ namespace Pointer {
     /****************************/
     
     /** Nous permet de convertir un SmartPointer en ReferenceCounter.
-     * Cette méthode nous permet de convertir n'importe quel type de smartpointer en un autre.
+     * Cette méthode nous permet de convertir n'importe quel type de
+smartpointer en un autre.
      */
     & operator RC() const {
       return *rc;
+    }
+
+    * operator RC() const {
+      return rc;
     }
     
     /** Nous permet de convertir un SmartPointer en pointer.
@@ -134,28 +162,38 @@ namespace Pointer {
     /*  Operateurs d'accès      */
     /****************************/
     
-    /** Renvoit directement l'objet sur lequel pointe le Smartpointer par l'intermediaire du ReferenceCounter.
+    /** Renvoit directement l'objet sur lequel pointe le Smartpointer par
+l'intermediaire du ReferenceCounter.
      * Fonctionne comme l'operateur * des pointeurs.
+     * Attention : pas de verification automatique d'accès concurrent, c'est à
+l'utilisateur de le verifier avec les méthodes lock(),...
      */
     O & operator * () {
       return rc->getObject();
     }
     
-    /** Renvoit directement l'objet sur lequel pointe le Smartpointer par l'intermediaire du ReferenceCounter.
+    /** Renvoit directement l'objet sur lequel pointe le Smartpointer par
+l'intermediaire du ReferenceCounter.
      * Fonctionne comme l'operateur * des pointeurs.
-     * A utiliser lorsque le pointeur n'est pas modifié
+     * A utiliser lorsque le pointeur n'est pas modifié.
+     * Attention : pas de verification automatique d'accès concurrent, c'est à
+l'utilisateur de le verifier avec les méthodes lock(),...
      */
     const O & operator * () const {
       return rc->getObject();
     }
     
     /** Operateur ->
+     * Attention : pas de verification automatique d'accès concurrent, c'est à
+l'utilisateur de le verifier avec les méthodes lock(),...
      */
     O * operator -> () {
       return  &rc->getObject();
     }
 
     /** Operateur -> sans modification de l'objet
+     * Attention : pas de verification automatique d'accès concurrent, c'est à
+l'utilisateur de le verifier avec les méthodes lock(),...
      */
     const O * operator -> () const {
       return  &rc->getObject();
@@ -166,3 +204,4 @@ namespace Pointer {
 };
 
 #endif
+
