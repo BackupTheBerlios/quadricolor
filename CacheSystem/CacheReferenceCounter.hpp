@@ -1,14 +1,14 @@
-#include "../Pointer/ReferenceCounter.hpp"
+#include "../Pointer/DefaultReferenceCounter.hpp"
 
 using namespace Pointer;
 
 namespace CacheSystem {
-  template<class K,class T>
+  template<class C,class T>
   class CacheReferenceCounter : public DefaultReferenceCounter {
   private:
-    Cache * _cache;
+    C * _cache;
   public:
-    CacheReferenceCounter<K,T>(Cache &c,T *t):DefaultReferenceCounter<T>(t) {
+    CacheReferenceCounter<C,T>(C &c,T *t):DefaultReferenceCounter<T>(t) {
       this->_cache=c;
     }
     
