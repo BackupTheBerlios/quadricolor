@@ -1,16 +1,17 @@
 #include <iostream.h>
 #include <qobject.h>
 #include <qfiledialog.h>
-
-
+#include <qimage.h>
+#include <qpainter.h>
+#include "MyWidget.hpp"
 
 class OpenFile : public QObject {
   Q_OBJECT
-  
+  MyWidget *widget;
 public:
-  OpenFile();
+  OpenFile(MyWidget *w);
   
-  ~OpenFile();
+  virtual ~OpenFile();
 public slots:
-  QString openFileChooser();
+   void openFileChooser();
 };
