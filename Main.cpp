@@ -10,15 +10,15 @@ using namespace loader;
 
 int main(int argc, char ** argv)
 {
-  Loader<QString> l;
+  Loader<QString, QImage, QFile> l;
   if(argc<2)
     {
       fprintf(stderr, "Syntaxe: quadricolor <image file name>\n");
       exit(EXIT_FAILURE);
     }
   QString * file_name;
-  CacheFifo<QImage, QString, Loader<QString> > cache =
-    CacheFifo<QImage, QString, Loader<QString> >(l, 70000, 3);
+  CacheFifo<QImage, QString, Loader<QString, QImage, QFile> > cache =
+    CacheFifo<QImage, QString, Loader<QString, QImage, QFile> >(l, 70000, 3);
   QImage * pic;
   QString present_files;
   

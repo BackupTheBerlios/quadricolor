@@ -11,9 +11,9 @@ using namespace std;
 
 namespace loader{
   
-  template<class K>
+  template<class K, class Image_Type, class File_Type>
   class Loader{
-    QImage _object;
+    Image_Type _object;
     
   public:
     // Constructor
@@ -30,7 +30,7 @@ namespace loader{
 
     // return the size on the disk of the file with that key.
     int getSize(const K &key){
-      QFile tmp_file(key);
+      File_Type tmp_file(key);
       int tmp_size = tmp_file.size();
       return tmp_size;
     }
@@ -39,11 +39,10 @@ namespace loader{
      * Read the file with the specified key and return a reference
      * on this objecy.
      */
-    QImage& getObject(const K & key) throw (ImageNotFoundException) {
+    Image_Type& getObject(const K & key) throw (ImageNotFoundException) {
       try {
 	//Read Image
-	//cout << "On lit l'image ->" << key << "<- " << endl;
-	_object = QImage(key);	
+	_object = Image_Type(key);	
 	
       }catch( exception &error_ ){
 	cout << "Caught exception: " << error_.what() << endl;
