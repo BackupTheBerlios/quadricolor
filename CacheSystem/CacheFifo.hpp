@@ -36,6 +36,8 @@ namespace CacheSystem{
     map<K, T>         _image_set;   //Contains all the key/references to a Reference Counter
     queue<const K*>   _freeable;    //Contains all the Reference Counters that are freeable
     
+    map<K, T>::iterator _it;        //Iterates the map that contains the Reference Counter
+    
     
     
     ///////Methods
@@ -43,20 +45,12 @@ namespace CacheSystem{
      * Adds an image to the list of images.
      * Returns true if the operation succeeded, false otherwise.
      */
-    bool addImageObject(const K &key, const T &image)
-      throw (NotEnoughSpaceException){
+    bool addImageObject(const K &key, const T &image){
       int image_size = this->_loader.getSize(key);
-      
-      if( (image_size+this->_nb_of_bytes<this->_max_bytes)&&
-	  (_nb_of_images+1<this->_max_images) ){
-	
-	this->_image_set[key] = image;
-	addToFreeable(key);
-	this->_nb_of_images++;
-	this->_nb_of_bytes += image_size;
-      }
-      else
-	throw NotEnoughSpaceException();
+      this->_image_set[key] = image;
+      addToFreeable(key);
+      this->_nb_of_images++;
+      this->_nb_of_bytes += image_size;
     }
     
     /**
@@ -64,6 +58,9 @@ namespace CacheSystem{
      * Returns true if the operation succeeded, false otherwise.
      */
     bool removeImageObject(const K &key){
+      map<K, T>::iterator index = (this->_image_set).find(key);
+      if(index == this->_image_set.end())
+	cout <<"Y a un bleme"<<endl;
       if(this->_image_set.erase(key)>=1) return true;
       return false;
     }
@@ -90,23 +87,28 @@ namespace CacheSystem{
     /**
      * Frees some memory. It removes some of the objects contained in this cache.
      */
-    void freeSomeMemory() throw (NotEnoughSpaceException,
-				 RemovalImpossibleException)
+    void freeSomeMemory(int new_file_size) throw (NotEnoughSpaceException,
+						  RemovalImpossibleException)
     {
       const K * image2bfreed;
       printf("nb images: %d\tnb d'octets: %d\n", this->_nb_of_images, this->_nb_of_bytes);
       //while there isn't enough space, we delete the first image-objects
-      while(_nb_of_images>=_max_images || _nb_of_bytes>=_max_bytes)
+      while(_nb_of_images+1>=_max_images || _nb_of_bytes+new_file_size>=_max_bytes)
 	{ //if there's too much image in cache
-	  if(this->_freeable.empty())//if the FIFO is empty, the user didn't grant 
+	  printf("L97 Taille de la file: %d\n", this->_freeable.size());
+	  if((this->_image_set.size()!=0) &&
+	     this->_freeable.empty())//if the FIFO is empty, the user didn't grant
 	    throw NotEnoughSpaceException(); //enough space for the cache
-	  
-	  image2bfreed = _freeable.front();
+	  puts("----->L103 dskfbksbdfjk");
+	  image2bfreed = this->_freeable.back();
+	  int image2bfreed_size = this->_loader.getSize(*image2bfreed);
 	  //remove an image from the cache
 	  if(!removeImageObject(*image2bfreed))
-	    throw RemovalImpossibleException(": removeImageObject.");
+	    //throw RemovalImpossibleException(": removeImageObject.");
+	    throw RemovalImpossibleException(*image2bfreed);
 	  if(!removeFromFreeable(*image2bfreed))
 	    throw RemovalImpossibleException(": removeFromFreeable.");
+	  this->_nb_of_bytes -= image2bfreed_size;
 	}
     }
     
@@ -125,6 +127,25 @@ namespace CacheSystem{
     ~CacheFifo(){}
     
     /**
+     * Initialises the iterator on the list of objects contained in this cache.
+     */
+    void initIterator()
+    { this->_it = this->_image_set.begin(); }
+    
+    /**
+     * At each call, returns the key of an object contained in this cache.
+     */
+    K getEachKeyStored()
+    {
+      if(this->_it == this->_image_set.end())
+	return "";
+      K returned = this->_it->first;
+      this->_it++;
+      return returned;
+    }
+    
+    
+    /**
      * Sets the bounds of the cache(total number of bytes, maximum authorized number of
      * bytes, number of images, maximum number of images).
      */
@@ -133,6 +154,7 @@ namespace CacheSystem{
       this->_max_bytes  = max_bytes;
       this->_max_images = max_nb_of_images;
     }
+    
     
     /**
      * Go and fetch an object-image. Its behaviour depends of the implementing subclasses.
@@ -143,9 +165,9 @@ namespace CacheSystem{
       map<K, T>::iterator index = (this->_image_set).find(key);
       if(index == this->_image_set.end())
 	{ //the object-image isn't in the image set
-	  freeSomeMemory(); //eventually, free some memory
 	  //ASK THE LOADER to fetch the image
 	  T image = this->_loader.getObject(key);
+	  freeSomeMemory(this->_loader.getSize(key)); //eventually, free some memory
 	  addImageObject(key, image); //ADD THE NEW image to the cache
 	  index = this->_image_set.find(key);
 	  puts("Image chargée");
