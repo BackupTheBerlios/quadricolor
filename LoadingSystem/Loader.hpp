@@ -6,8 +6,6 @@
 #include <qfile.h>
 #include "ImageNotFoundException.hpp"
 
-using namespace std;
-
 
 namespace loader{
   
@@ -16,19 +14,24 @@ namespace loader{
     Image_Type _object;
     
   public:
-    // Constructor
+    /**
+     * Constructor
+     */
     Loader(){
       string srcdir("");
       if(getenv("SRCDIR") != 0)
 	srcdir = getenv("SRCDIR");         
     }
     
-    // Destructor
+    /**
+     * Destructor
+     */
     virtual ~Loader(){
-      //cout << "I'll Be Back" << endl;
     }
 
-    // return the size on the disk of the file with that key.
+    /**
+     * returns the size on the disk of the file with that key.
+     */
     int getSize(const K &key){
       File_Type tmp_file(key);
       int tmp_size = tmp_file.size();
@@ -36,16 +39,15 @@ namespace loader{
     }
 
     /**
-     * Read the file with the specified key and return a reference
-     * on this objecy.
+     * Reads the file with the specified key and returns a reference
+     * on this object.
      */
     Image_Type& getObject(const K & key) throw (ImageNotFoundException) {
       try {
-	//Read Image
-	_object = Image_Type(key);	
-	
+	//reads an Image
+	_object = Image_Type(key);
       }catch( exception &error_ ){
-	cout << "Caught exception: " << error_.what() << endl;
+	std::cerr << "Caught exception: " << error_.what() << endl;
 	throw ImageNotFoundException(key);
       }
       return _object;
