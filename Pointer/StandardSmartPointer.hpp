@@ -1,6 +1,7 @@
 #ifndef StandardSmartPointer_HPP
 #define StandardSmartPointer_HPP
 
+
 namespace Pointer {
 
   /** Ce SmartPointer contient les opérateurs de base *, -> des pointeurs.
@@ -133,6 +134,13 @@ smartpointer en un autre.
       rc->attach();
       return *this;
     }
+
+    StandardSmartPointer<RC,O> & operator = (O &o) {
+      rc->detach();
+      rc = RC(o);
+      rc->attach();
+      return *this;
+    }
     
     /****************************/
     /* Operateur de comparaison */
@@ -158,7 +166,6 @@ smartpointer en un autre.
     /** Renvoit directement l'objet sur lequel pointe le Smartpointer par
 l'intermediaire du ReferenceCounter.
      * Fonctionne comme l'operateur * des pointeurs.
-<<<<<<< StandardSmartPointer.hpp
      * Attention : pas de verification automatique d'accès concurrent, c'est à l'utilisateur de le verifier avec les méthodes lock(),...
      */
     O & operator * () {
