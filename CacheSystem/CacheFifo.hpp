@@ -30,7 +30,7 @@ namespace CacheSystem{
     int               _nb_of_bytes; //Total number of bytes contained in the cache
     int               _max_bytes;   //Maximum number of bytes
     
-    int               _nb_of_images;     //Number of images contained in the cache
+    int               _nb_of_images;//Number of images contained in the cache
     int               _max_images;  //Maximum number of images allowed
     
     L                 _loader;      //The object that will enable this cache to load files in memory

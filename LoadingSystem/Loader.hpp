@@ -1,11 +1,11 @@
 #ifndef LOADER_HPP
 #define LOADER_HPP
+
 #include <string>
 #include <iostream>
 #include <qimage.h>
 #include <qfile.h>
 #include "ImageNotFoundException.hpp"
-
 
 namespace loader{
   
@@ -30,7 +30,7 @@ namespace loader{
     }
 
     /**
-     * returns the size on the disk of the file with that key.
+     * Returns the size on the disk of the file with that key.
      */
     int getSize(const K &key){
       File_Type tmp_file(key);

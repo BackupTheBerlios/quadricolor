@@ -2,6 +2,9 @@
 
 using namespace GUI;
 
+/**
+ * Main class of the application.
+ */
 int main(int argc, char *argv[]){
   Loader<QString, QImage, QFile> l;
   

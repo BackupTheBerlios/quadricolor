@@ -33,11 +33,11 @@ namespace CacheSystem{
     int       _nb_of_images;     //Number of images contained in the cache
     int       _max_nb_of_images; //Maximum number of images allowed
     
-    L         _loader;      //The object that will enable this cache to load files in memory
+    L         _loader;           //The object that will enable this cache to load files in memory
     
     //Contains all the key/references to a Reference Counter
     map<K, T> _image_set;
-    list<pair<K*, int> > _freeable;    //Contains the key of all the freeable elements
+    list<pair<K*, int> > _freeable; //Contains the key of all the freeable elements
     
     map<K, T>::iterator _it;        //Iterates the map that contains the Reference Counter
     
@@ -94,6 +94,7 @@ namespace CacheSystem{
 	}
     }
     
+    
     /**
      * Decreases the priority of the image-object which has the key 'key'.
      * This method than shakes the freeable list, in order the freeable objects
@@ -133,6 +134,11 @@ namespace CacheSystem{
     
     
   public:
+    /**
+     * Builds a cache with the given loader and sets the bounds of the cache
+     * (total number of bytes, maximum authorized number of bytes, number of
+     * images, maximum number of images).
+     */
     CacheOldestUnusedOut(const L &loader,
 			 int max_bytes, int max_nb_of_images):_nb_of_bytes(0),
 							      _max_bytes(max_bytes),

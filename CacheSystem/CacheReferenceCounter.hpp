@@ -4,7 +4,10 @@
 #include "DefaultReferenceCounter.hpp"
 
 namespace CacheSystem {
-
+  /**
+   * Reference Counter adapted to the cache.
+   * Counts the number of references linked to an object.
+   */
   template<class C,class K,class O>
   class CacheReferenceCounter : public Pointer::DefaultReferenceCounter<O> {
   private:
