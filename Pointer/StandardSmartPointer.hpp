@@ -68,14 +68,14 @@ namespace Pointer {
     /** Nous permet de convertir un SmartPointer en ReferenceCounter.
      * Cette méthode nous permet de convertir n'importe quel type de smartpointer en un autre.
      */
-    operator RC() const {
-      return *rc;
+    & operator RC() const {
+      return rc;
     }
 
     /** Nous permet de convertir un SmartPointer en pointer.
      */
-    operator O() const {
-      return rc->getObject();
+    * operator O() const {
+      return &rc->getObject();
     }
 
     /****************************/

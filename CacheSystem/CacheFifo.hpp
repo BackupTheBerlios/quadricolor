@@ -166,12 +166,15 @@ namespace CacheSystem{
 	{ //the object-image isn't in the image set
 	  //ASK THE LOADER to fetch the image
 	  Pointer::StandardSmartPointer<CacheReferenceCounter<CacheFifo,K,T>, T> image ( new CacheReferenceCounter<CacheFifo,K,T>(this,key, this->_loader.getObject(key) ) );
+	  //T * image = &this->_loader.getObject(key);
 	  try{
 	    freeSomeMemory(this->_loader.getSize(key)); //eventually, free some memory
 	    addImageObject(key, *image); //ADD THE NEW image to the cache
 	    index = this->_image_set.find(key);
-	  }catch(NotEnoughSpaceException e)
-	    {cerr<<e.getMessage()<<"\nImage "<<key<<" hasn't been added in the cache."; return image;}
+	  }catch(NotEnoughSpaceException e){
+	    cerr<<e.getMessage()<<"\nImage "<<key<<" hasn't been added in the cache.";
+	    return image;
+	  }
 	}
       return &(*index).second;
     }
