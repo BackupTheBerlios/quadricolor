@@ -5,14 +5,13 @@
 
 namespace CacheSystem {
 
-  template<class C,class O>
+  template<class C,class K,class O>
   class CacheReferenceCounter : public Pointer::DefaultReferenceCounter<O> {
   private:
     C * _cache;
+    K * _key;
   public:
-    CacheReferenceCounter<C,O>(C &c,O *object):Pointer::DefaultReferenceCounter<O>(object) {
-      this->_cache=c;
-    }
+    CacheReferenceCounter<C,K,O>(C &c,K &k,O *object):Pointer::DefaultReferenceCounter<O>(object),_cache(c),_key(k) {}
     
     virtual ~CacheReferenceCounter() {}
     
@@ -20,7 +19,7 @@ namespace CacheSystem {
       _counter--;
       if( _counter <= 0 ) {
 	_counter++;
-	_cache->addToFreeAble(this);
+	_cache->addToFreeAble(_key);
       }
     }
   };
