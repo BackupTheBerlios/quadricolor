@@ -4,16 +4,10 @@
 #include <string>
 #include <pthread.h>
 
+#include "NullPointerException.hpp"
+
 namespace Pointer {
 
-  class NullPointerException{
-  private :
-    string _error_location;
-  public:
-    NullPointerException(string error_location=""):_error_location(error_location){}
-    string getMessage() { return "The pointer is Null"+_error_location; }
-  };
-  
   template<class O>
   class DefaultReferenceCounter {
   protected:
@@ -22,6 +16,8 @@ namespace Pointer {
     pthread_mutex_t *mut;
     
   public:
+    DefaultReferenceCounter<O>():_counter(0),_object(0) {}
+    
     /** Initialise le ReferenceCounter et cree un mutex
      */
     DefaultReferenceCounter<O>(O &o):_counter(1),_object(&o) {

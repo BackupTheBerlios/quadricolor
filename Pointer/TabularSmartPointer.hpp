@@ -4,30 +4,11 @@
 #include <string>
 
 #include "StandardSmartPointer.hpp"
+#include "ArrayIndexOutOfBoundsException.hpp"
+#include "InvalidValueException.hpp"
 
 namespace Pointer {
-  
-  /** Exception genere lors du valeur invalide
-   * comme d'une valeur négative pour la taille d'un tableau
-   */
-  class InvalidValueException{
-   private :
-    string _error_value;
-  public:
-    InvalidValueException(string error_value=""):_error_value(error_value){}
-    string getMessage() { return string("The value to access in the tabular is not valid: probably negative")+_error_value; }
-  };
-  
-  /** Exception genere lors d'un debordement
-   */
-  class ArrayIndexOutOfBoundsException{
-  private :
-    string _error_value;
-  public:
-    ArrayIndexOutOfBoundsException(string error_value=""):_error_value(error_value){}
-    string getMessage() { return string("ArrayIndexOutOfBounds")+_error_value; }
-  };
-  
+   
   /** Cette classe permet de generer et de gerer un tableau, comme n'importe quel pointeur.
    * Leve une exception: ArrayIndexOutOfBoundsException lorsr de debordement.
    */
@@ -42,7 +23,7 @@ namespace Pointer {
      */
     void resize(int index) {
       if( index < 0 )
-	throw InvalidValueException(index);
+	throw InvalidValueException();
       if(sp) {
 	SP *tmp = new SP[index];
 	int m = (index<taille)?index:taille;
@@ -60,7 +41,7 @@ namespace Pointer {
     void copyFrom(TabularSmartPointer & tsp) {
       if( this->sp ) {
 	for(int i=0;i<size();i++)
-	  ((Pointer::DefaultReferenceCounter)(this->sp+i))->detach();
+	  ((RC)(this->sp+i))->detach();
 	this->taille=0;
       }
       
@@ -68,19 +49,19 @@ namespace Pointer {
 	this->sp = new SP[tsp.size()];
 	for(int i=0;i<tsp.size();i++) {
 	  this->sp[i]=tsp.get[i];
-	  ((Pointer::DefaultReferenceCounter)(this->sp+i))->attach();
+	  ((RC)(this->sp+i))->attach();
 	}
 	this->taille=taille;
       }
       else {
 	for(int i=0;i<size();i++)
-	  ((Pointer::DefaultReferenceCounter)(this->sp+i))->detach();
+	  ((RC)(this->sp+i))->detach();
 	this->sp=0; this->taille=0; }
     }
 
-    void testIfIsAllowed(int index) throw(ArrayIndexOutOfBoundsException) {
+    void testIfIsAllowed(int index) throw(Pointer::ArrayIndexOutOfBoundsException) {
       if( pos+index < 0 || pos+index >= taille )
-	throw ArrayIndexOutOfBoundsException(pos+index);
+	throw Pointer::ArrayIndexOutOfBoundsException();
     }
     
   public:
@@ -96,7 +77,7 @@ namespace Pointer {
     TabularSmartPointer<SP,RC,O>(SP *sp,int taille=0):Pointer::StandardSmartPointer<RC,O>((RC)sp),sp(sp),pos(0),taille(taille) {
       if( taille < 0 ) {
 	delete this;
-	throw InvalidValueException(taille);
+	throw Pointer::InvalidValueException();
       }
       for( int i=0;i<taille;i++)
 	( (RC)(sp+i) )->attach();
@@ -105,8 +86,7 @@ namespace Pointer {
     /** Construit un tableau vide
      * On rajoute des ReferenceCounter avec les methodes add
      */
-    TabularSmartPointer<SP,RC,O>():sp(NULL),pos(0),taille(0) {
-    }
+    TabularSmartPointer<SP,RC,O>():sp(0),pos(0),taille(0) {}
 
 
     /****************************/
@@ -115,7 +95,7 @@ namespace Pointer {
     
     virtual ~TabularSmartPointer() {
       for( int i=0;i<size();i++)
-	( (RC)(sp+i) )->detach();
+	((RC)*get(i)).detach();
     }
 
     
@@ -133,7 +113,7 @@ namespace Pointer {
      */
     void add(SP *sp) {
       resize(size()+1);
-      this->sp[size()-1]=sp;
+      this->sp[size()-1]=*sp;
       ((RC)this->sp)->attach();
     }
 
@@ -141,7 +121,7 @@ namespace Pointer {
      */
     void add(SP *sp,int index) {
       if( index < 0 || index > size() )
-	throw ArrayIndexOutOfBoundsException(index);
+	throw Pointer::ArrayIndexOutOfBoundsException();
       resize(size()+1);
       for(int i=index;i<size()-1;i++)
 	this->sp[i+1]=this->rc[i];
@@ -153,7 +133,7 @@ namespace Pointer {
      */
     void remove(int index) {
       if( index < 0 || index >= size() )
-	throw ArrayIndexOutOfBoundsException(index);
+	throw Pointer::ArrayIndexOutOfBoundsException();
       for(int i=index;i<size()-1;i++)
 	this->rc[i]=this->rc[i+1];
       resize(size()-1);
@@ -165,7 +145,7 @@ namespace Pointer {
      */
     SP & get(int index) {
       if( index < 0 || index >= size() )
-	throw ArrayIndexOutOfBoundsException();
+	throw Pointer::ArrayIndexOutOfBoundsException();
       return sp[index];
     }
     

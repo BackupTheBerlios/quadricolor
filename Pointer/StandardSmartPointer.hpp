@@ -16,6 +16,9 @@ namespace Pointer {
     /* Equivalent à la notation */
     /*  * ds pointeurs          */
     /****************************/
+    /** Constructeur par defaut
+     */
+    StandardSmartPointer<RC,O>():rc(0) {}
     
     /** Constructeur sur ReferenceCounter
      */
