@@ -13,6 +13,7 @@ int main(int /*argc*/, char ** argv){
   cout << k << endl;
   try{
     Image pic = L.getObject(k);
+    cout << "The size of the image " << k << " is " << L.getSize(k) << endl;
     pic.display();
   }catch( ImageNotFoundException &e){ cout << e.getMessage() << endl;}
 }

@@ -23,14 +23,21 @@ namespace loader{
 	srcdir = getenv("SRCDIR");         
     }
     
+    // Destructor
     virtual ~Loader(){
       cout << "I'll Be Back" << endl;
     }
 
-    int getSize(){
-      
+    // return the size on the disk of the file with that key.
+    off_t getSize(K key){
+      _object.read(key);
+      return _object.fileSize();
     }
 
+    /**
+     * Read the file with the specified key and return a reference
+     * on this objecy.
+     */
     Image& getObject(K key) throw (ImageNotFoundException) {
       try {
 	//Read Image
@@ -44,7 +51,7 @@ namespace loader{
 	
       }catch( exception &error_ ){
 	cout << "Caught exception: " << error_.what() << endl;
-	//throw ImageNotFoundException(key);
+	throw ImageNotFoundException(key);
       }
       return _object;
     }
