@@ -1,7 +1,7 @@
 #ifndef IMAGE_NOT_FOUNDEXCEPTION_HPP
 #define IMAGE_NOT_FOUNDEXCEPTION_HPP
 
-#include <string.h>
+#include <qstring.h>
 using namespace std;
 
 /**
@@ -9,10 +9,10 @@ using namespace std;
  * to load an image.
  */
 class ImageNotFoundException{
-  string pic;
+  QString pic;
 public:
-  ImageNotFoundException(string s):pic(s){}
-  string getMessage(){ string("Unable to load the specified image ")+pic;}
+  ImageNotFoundException(QString s):pic(s){}
+  QString getMessage(){ return QString("Unable to load the specified image ")+pic;}
 };
 
 #endif

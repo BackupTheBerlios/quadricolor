@@ -2,18 +2,18 @@
 #define LOADER_HPP
 #include <string>
 #include <iostream>
-#include <Magick++.h>
+#include <qimage.h>
+#include <qfile.h>
 #include "ImageNotFoundException.hpp"
 
 using namespace std;
 
-using namespace Magick;
 
 namespace loader{
   
   template<class K>
   class Loader{
-    Image _object;
+    QImage _object;
     
   public:
     // Constructor
@@ -25,29 +25,25 @@ namespace loader{
     
     // Destructor
     virtual ~Loader(){
-      cout << "I'll Be Back" << endl;
+      //cout << "I'll Be Back" << endl;
     }
 
     // return the size on the disk of the file with that key.
-    off_t getSize(K key){
-      _object.read(key);
-      return _object.fileSize();
+    int getSize(K &key){
+      QFile tmp_file(key);
+      int tmp_size = tmp_file.size();
+      return tmp_size;
     }
 
     /**
      * Read the file with the specified key and return a reference
      * on this objecy.
      */
-    Image& getObject(K key) throw (ImageNotFoundException) {
+    QImage& getObject(K key) throw (ImageNotFoundException) {
       try {
 	//Read Image
-	cout << "On lit l'image ->" << key << "<- " << endl;
-	_object.read(key);
-	
-	// Save to file
-	cout << "Writing to "<< key <<".miff"<< endl;
-	_object.compressType( RunlengthEncodedCompression );
-	_object.write("key_out.miff");
+	//cout << "On lit l'image ->" << key << "<- " << endl;
+	_object = QImage(key);	
 	
       }catch( exception &error_ ){
 	cout << "Caught exception: " << error_.what() << endl;
