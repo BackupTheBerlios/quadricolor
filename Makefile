@@ -1,4 +1,6 @@
-quadricolor: Test.cpp LoadingSystem/Loader.hpp LoadingSystem/ImageNotFoundException.hpp	
-	c++ Test.cpp `Magick++-config --cppflags --cxxflags --ldflags --libs` -o quadricolor
+$OPTION="-Wall -I. -ILoadingSystem/ -ICacheSystem/"
+
+quadricolor: Test.cpp
+	c++ $(OPTION) Test.cpp `Magick++-config --cppflags --cxxflags --ldflags --libs` -o quadricolor
 clean:
-	rm -f a.out
+	rm -f quadricolor
