@@ -170,7 +170,7 @@ namespace Pointer {
     }
     
     /****************************/
-    /*  Operateur d'affectation */
+    /* Operateurs d'affectation */
     /****************************/
     
     /** Permet d'assigner de nouveaux RC à la place des anciens.

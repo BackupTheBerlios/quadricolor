@@ -28,6 +28,10 @@ namespace Pointer {
       pthread_mutex_init(mut,NULL);
     }
 
+    DefaultReferenceCounter<O>(O *o):_counter(1),_object(o) {
+      pthread_mutex_init(mut,NULL);
+    }
+
     virtual ~DefaultReferenceCounter() {
       pthread_mutex_destroy(mut);
       delete _object;

@@ -20,10 +20,19 @@ namespace Pointer {
       rc->attach();
     }
 
+    StandardSmartPointer<RC,O>(RC &drc):rc(drc) {
+      rc->attach();
+    }
+
     /** Constructeur sur Pointer, il faut prèciser le ReferenceCounter à utiliser.
      * On pourra le recuperer grâce à l'operateur de conversion.
      */
     StandardSmartPointer<RC,O>(O *o) {
+      rc = RC(o);
+      rc->attach();
+    }
+
+    StandardSmartPointer<RC,O>(O &o) {
       rc = RC(o);
       rc->attach();
     }
@@ -53,7 +62,7 @@ namespace Pointer {
     } 
     
     /****************************/
-    /* Operateur de conversion  */
+    /* Operateurs de conversion  */
     /****************************/
     
     /** Nous permet de convertir un SmartPointer en ReferenceCounter.
@@ -63,9 +72,14 @@ namespace Pointer {
       return *rc;
     }
 
+    /** Nous permet de convertir un SmartPointer en pointer.
+     */
+    operator O() const {
+      return rc->getObject();
+    }
 
     /****************************/
-    /*  Operateur d'affectation */
+    /*  Operateurs d'affectation */
     /****************************/
     
     /** Permet d'assigner un nouveau ReferenceCounter au SmartPointer.
@@ -74,6 +88,16 @@ namespace Pointer {
     StandardSmartPointer<RC,O> & operator = (RC *drc) {
       rc->detach();
       rc=drc;
+      rc->attach();
+      return *this;
+    }
+
+    /** Permet d'assigner un nouveau pointer au SmartPointer.
+     * Renvoit une reference sur le smartpointer ainsi modifié.
+     */
+    StandardSmartPointer<RC,O> & operator = (O *o) {
+      rc->detach();
+      rc = RC(o);
       rc->attach();
       return *this;
     }
