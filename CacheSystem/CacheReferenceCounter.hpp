@@ -1,4 +1,4 @@
-#include "ReferenceCounter.hpp"
+#include "../Pointer/ReferenceCounter.hpp"
 
 using namespace Pointer;
 
