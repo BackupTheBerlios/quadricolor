@@ -5,13 +5,15 @@
 #include <qpainter.h>
 #include "MyWidget.hpp"
 
-class OpenFile : public QObject {
-  Q_OBJECT
-  MyWidget *widget;
-public:
-  OpenFile(MyWidget *w);
+namespace GUI{
+  class OpenFile : public QObject {
+    Q_OBJECT
+    MyWidget *widget;
+  public:
+    OpenFile(MyWidget *w);
   
-  virtual ~OpenFile();
-public slots:
-   void openFileChooser();
-};
+    virtual ~OpenFile();
+  public slots:
+    void openFileChooser();
+  };
+}
