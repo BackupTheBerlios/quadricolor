@@ -1,18 +1,19 @@
 \section{Le smart pointer}
-Salut je me présente, je suis en Maitrise d'informatique et je suis à
-la recherche d'un travail renumeré avec vacances garanties, en
-prèvision de mon DESS que je n'aurais pas sachant qu'on aura sera en
-concurrence avec des brels qui auront de meilleures moyennes parce
-qu'ils auront le temps de terminer le peu de projets.
-Et à quoi bon faire un stage si on est à plein temps à la fac.
+%Salut je me présente, je suis en Maitrise d'informatique et je suis à
+%la recherche d'un travail renumeré avec vacances garanties, en
+%prèvision de mon DESS que je n'aurais pas sachant qu'on aura sera en
+%concurrence avec des brels qui auront de meilleures moyennes parce
+%qu'ils auront le temps de terminer le peu de projets.
+%Et à quoi bon faire un stage si on est à plein temps à la fac.
 
 Un Smart Pointer est un objet qui encapsule un pointeur et qui teste
-les accès en mémoire sur cet objet. Mais malgré tout sa manipulation
+les accès en mémoire sur cet objet (nous supposerons que le lecteur est
+famillier avec la notion de Smart Pointer). Mais malgré tout sa manipulation
 reste parfois ambigüe (differente de celles d'un vrai pointeur) \\par ex:
 {\policecommande \\void *p;\\SmartPointer sp1(p);\\SmartPointer
 *sp2(p);\\return (*sp1==*(*sp2);//renvoit true }
 
-Un Smart Poiter est composé de 2 parties : le Smart Pointeur en tant
+Il est composé de 2 parties : le Smart Pointeur en tant
 que tel (la partie qui gere les accès) et un Reference Counter qui
 peut être partagé par plusieurs Smart Pointer.
 
@@ -36,5 +37,14 @@ et 2 exceptions:
 \item et ArrayIndexOutOfBoundsException.
 \end{itemize}
 
+\subsection{Description du fonctionnement des caches}
 
+\subsubsection{DefaultReferenceCounter}
+C'est le ReferenceCounter par défaut, avec les fonctionnalitées de
+bases pour pouvoir implementer ensuite le StandardSmartPointer.\\
+Il encapsule le pointer.
+Il dispose de 2 méthodes pour y attacher et detacher un Smart Pointer.
+Il dispose de 3 méthodes pour gerer les accès concurrent sur le
+pointer.
+Il dispose de 2 méthodes (const et pas const) pour retourner le pointeur encapsulé.
 
