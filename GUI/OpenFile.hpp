@@ -8,9 +8,11 @@
 namespace GUI{
   class OpenFile : public QObject {
     Q_OBJECT
-    MyWidget *widget;
+    MyWidget *_widget;
+    CacheFifo<QImage, QString, Loader<QString, QImage, QFile> > _cache;
+    
   public:
-    OpenFile(MyWidget *w);
+    OpenFile(MyWidget *w, CacheFifo<QImage, QString, Loader<QString, QImage, QFile> > cache);
   
     virtual ~OpenFile();
   public slots:

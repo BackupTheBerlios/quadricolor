@@ -194,17 +194,17 @@ namespace CacheSystem{
       
       if(index == _image_set.end())
 	{ //the object-image isn't in the image set
-	  //ASK THE LOADER to fetch the image
+	  //ask the loader to fetch the image
 	  Pointer::StandardSmartPointer<CacheReferenceCounter<CacheOldestUnusedOut,K,T>, T> image ( new CacheReferenceCounter<CacheOldestUnusedOut,K,T>(this,key, this->_loader.getObject(key) ) );
 	  try{
 	    freeSomeMemory(this->_loader.getSize(key)); //eventually, free some memory
-	    addImageObject(key, *image); //ADD THE NEW image to the cache
+	    addImageObject(key, *image); //add the new image to the cache
 	    index = this->_image_set.find(key);
 	  }catch(NotEnoughSpaceException e){
 	    cerr<<e.getMessage()<<"\nImage "<<key<<" hasn't been added in the cache.";
 	    return image;
 	}
-      else //If the element is already present, we only have to decrease his priority
+      else //if the element is already present, we only have to decrease his priority
 	shakePriorities(key); //and shake the freeable list
       return *index;
     }

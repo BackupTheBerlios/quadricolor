@@ -1,7 +1,7 @@
 #include "MyApplication.hpp"
 
 namespace GUI{
-  MyApplication::MyApplication(QApplication &_app){
+  MyApplication::MyApplication(QApplication &_app, CacheFifo<QImage, QString, Loader<QString, QImage, QFile> > c):_cache(c){
     QListBox *_listBox;
     MyWidget *_widget;
     OpenFile *_opener;
@@ -12,10 +12,10 @@ namespace GUI{
     _listBox->setFocusPolicy( QWidget::StrongFocus );
     
     // Creation of the main widget
-    _widget = new MyWidget(_listBox);
+    _widget = new MyWidget(_listBox, _cache);
   
     // Creation of an instance of open/save object
-    _opener = new OpenFile(_widget);
+    _opener = new OpenFile(_widget, _cache);
   
     // Creation of the menu bar
     _menuBar = new QMenuBar(_widget); 

@@ -19,7 +19,8 @@ quel pointeur.
     vector<SP> tab;// vector de SmartPointer
     int pos;
 
-    void testIfIsAllowed(int index) throw(Pointer::ArrayIndexOutOfBoundsException) {
+    void testIfIsAllowed(int index)
+throw(Pointer::ArrayIndexOutOfBoundsException) {
       if( pos+index < 0 || pos+index >= size() )
 	throw Pointer::ArrayIndexOutOfBoundsException(pos+index);
     }
@@ -41,7 +42,7 @@ quel pointeur.
     /****************************/
     
     virtual ~TabularSmartPointer() {
-      tab.clear();
+      //tab.clear();
     }
 
     
@@ -90,12 +91,14 @@ tableau
     /** Permet d'assigner de nouveaux RC à la place des anciens.
      * Attention il doit y avoir au moins taille RC.
      */
-    TabularSmartPointer<SP,RC,O> & operator = (TabularSmartPointer<SP,RC,O> & tsp) {
+    TabularSmartPointer<SP,RC,O> & operator = (TabularSmartPointer<SP,RC,O> &
+tsp) {
       tab.clear();
       pos=0;
-      for(int i=0;i<tsp.size();i++)
+      for(int i=0;i<tsp.size();i++) {
 	add(tsp.get(i));
-            
+      }
+
       return *this;
     }
     
@@ -225,3 +228,4 @@ tableau
 };
 
 #endif
+

@@ -31,7 +31,7 @@ namespace CacheSystem{
     int               _max_bytes;   //Maximum number of bytes
     
     int               _nb_of_images;     //Number of images contained in the cache
-    int               _max_images; //Maximum number of images allowed
+    int               _max_images;  //Maximum number of images allowed
     
     L                 _loader;      //The object that will enable this cache to load files in memory
     
@@ -50,7 +50,6 @@ namespace CacheSystem{
     void addImageObject(const K &key, const T &image){
       int image_size = this->_loader.getSize(key);
       this->_image_set[key] = image;
-      addToFreeable(&key);
       this->_nb_of_images++;
       this->_nb_of_bytes += image_size;
     }
@@ -59,18 +58,17 @@ namespace CacheSystem{
      * Removes an image from the list of images.
      * Returns true if the operation succeeded, false otherwise.
      */
-    bool removeImageObject(const K *key){
-      if(this->_image_set.erase(*key)>=1)
-	return true;
-      return false;
-    }
-    
-    /**
-     * Removes the image-object from the list of the freeable objects.
-     * Returns true if the operation succeeded, false otherwise.
-     */
-    bool removeFromFreeable(){
+    bool removeImageObject(const K * key){
+      //remove from the map
+      if(this->_image_set.erase(*key)<1)
+	return false;
+      //remove from the list of the freeable objects
       this->_freeable.pop();
+      
+      int image2bfreed_size = this->_loader.getSize(*key);
+      this->_nb_of_bytes -= image2bfreed_size;
+      this->_nb_of_images--;
+      
       return true;
     }
     
@@ -89,14 +87,10 @@ namespace CacheSystem{
 	  if(this->_freeable.empty())
 	    throw NotEnoughSpaceException(); //enough space for the cache
 	  image2bfreed = this->_freeable.front();
-	  int image2bfreed_size = this->_loader.getSize(*image2bfreed);
 	  
 	  //remove an image from the cache
 	  if(!removeImageObject(image2bfreed))
-	    throw RemovalImpossibleException(": removeImageObject.");
-	  if(!removeFromFreeable())
-	    throw RemovalImpossibleException(": removeFromFreeable.");
-	  this->_nb_of_bytes -= image2bfreed_size;
+	    throw RemovalImpossibleException((string)*image2bfreed);
 	}
     }
     
@@ -119,7 +113,20 @@ namespace CacheSystem{
      */
     void initIterator()
     { this->_it = this->_image_set.begin(); }
-    
+
+    void showFreeable() {
+      int i=0;
+      queue<const K*>   _tmp;
+      cout<<"free taille "<<_freeable.size()<<endl;
+      while(i<_freeable.size()) {
+	const K * k = _freeable.front();
+	cout<<"free "<<*k<<endl;
+	_freeable.pop();
+	_freeable.push(k);
+	i++;
+      }
+    }
+      
     /**
      * At each call, returns the key of an object contained in this cache.
      */
@@ -150,7 +157,6 @@ namespace CacheSystem{
      */
     bool addToFreeable(const K *key){
       this->_freeable.push(key); //We only need a pointer on a key
-      
       return true;
     }
     
@@ -159,20 +165,23 @@ namespace CacheSystem{
      * Go and fetch an object-image. Its behaviour depends of the implementing subclasses.
      * Must be called by the user interface-side.
      */
-    T *getImageObject(const K &key) throw (NotEnoughSpaceException,
-					  RemovalImpossibleException){
-      map<K, T>::iterator index = this->_image_set.find(key);
+    T *getImageObject(const K *key) throw (NotEnoughSpaceException,
+					   RemovalImpossibleException){
+      map<K, T>::iterator index = this->_image_set.find(*key);
       
       if(index == this->_image_set.end())
 	{ //the object-image isn't in the image set
-	  //ASK THE LOADER to fetch the image
-	  Pointer::StandardSmartPointer<CacheReferenceCounter<CacheFifo,K,T>, T> image ( new CacheReferenceCounter<CacheFifo,K,T>(this,key, this->_loader.getObject(key) ) );
+	  //ask the loader to fetch the image
+	  Pointer::StandardSmartPointer<CacheReferenceCounter<CacheFifo,K,T>, T> image ( new CacheReferenceCounter<CacheFifo,K,T>(this,*key, this->_loader.getObject(*key) ) );
 	  try{
-	    freeSomeMemory(this->_loader.getSize(key)); //eventually, free some memory
-	    addImageObject(key, *image); //ADD THE NEW image to the cache
-	    index = this->_image_set.find(key);
+	    freeSomeMemory(this->_loader.getSize(*key)); //eventually, free some memory
+	    addImageObject(*key, *image); //add the new image to the cache
+	    index = this->_image_set.find(*key);
 	  }catch(NotEnoughSpaceException e){
-	    cerr<<e.getMessage()<<"\nImage "<<key<<" hasn't been added in the cache.";
+	    cerr<<e.getMessage()<<"\nImage "<<*key<<" hasn't been added in the cache.";
+	    return image;
+	  }catch(RemovalImpossibleException e){
+	    cerr<<e.getMessage()<< endl;
 	    return image;
 	  }
 	}

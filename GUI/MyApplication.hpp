@@ -7,13 +7,14 @@
 
 namespace GUI{
   class MyApplication{
+    CacheFifo<QImage, QString, Loader<QString, QImage, QFile> > _cache;
     QListBox *_listBox;
     MyWidget *_widget;
     OpenFile *_opener;
     QMenuBar *_menuBar;
     QPopupMenu *_file;
   public:
-    MyApplication(QApplication &app);
+    MyApplication(QApplication &app, CacheFifo<QImage, QString, Loader<QString, QImage, QFile> > _cache);
     virtual ~MyApplication();
   };
 }
