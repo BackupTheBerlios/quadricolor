@@ -1,7 +1,14 @@
 #ifndef CACHE_OLDEST_UNUSED_OUT_HPP
 #define CACHE_OLDEST_UNUSED_OUT_HPP
 
-#include <string.h>
+#include <string>
+#include <map>
+#include <queue>
+#include "StandardSmartPointer.hpp"
+#include "CacheReferenceCounter.hpp"
+#include "Loader.hpp"
+#include "NotEnoughSpaceException.hpp"
+#include "RemovalImpossibleException.hpp"
 #include "Unable2ShakePriority.hpp"
 
 namespace CacheSystem{
@@ -27,9 +34,13 @@ namespace CacheSystem{
     int       _max_nb_of_images; //Maximum number of images allowed
     
     L         _loader;      //The object that will enable this cache to load files in memory
+    
     //Contains all the key/references to a Reference Counter
     map<K, T> _image_set;
     list<pair<K*, int> > _freeable;    //Contains the key of all the freeable elements
+    
+    map<K, T>::iterator _it;        //Iterates the map that contains the Reference Counter
+    
     
     ///////Methods
     /**
@@ -39,7 +50,6 @@ namespace CacheSystem{
     void addImageObject(const K &key, const T &image){
       int image_size = this->_loader.getSize(key);
       this->_image_set[key] = image;
-      addToFreeable(&key);
       this->_nb_of_images++;
       this->_nb_of_bytes += image_size;
     }
@@ -49,18 +59,19 @@ namespace CacheSystem{
      * Returns true if the operation succeeded, false otherwise.
      */
     bool removeImageObject(const K &key){
-      if(this->_image_set.erase(key)>=1) return true;
-      return false;
-    }
-    
-    /**
-     * Removes the image-object from the list of the freeable objects.
-     * Returns true if the operation succeeded, false otherwise.
-     */
-    bool removeFromFreeable(){
+      //remove from the map
+      if(this->_image_set.erase(*key)<1)
+	return false;
+      //remove from the list of the freeable objects
       this->_freeable.pop_front();
+      
+      int image2bfreed_size = this->_loader.getSize(*key);
+      this->_nb_of_bytes -= image2bfreed_size;
+      this->_nb_of_images--;
+      
       return true;
     }
+    
     
     /**
      * Frees some objects while there isn't enough space.
@@ -73,16 +84,13 @@ namespace CacheSystem{
       /* while there isn't enough space, we delete the first image-objects */
       while(_nb_of_images+1>=_max_images || _nb_of_bytes+new_file_size>=_max_bytes)
 	{//if there's too much image in cache
-	  if(this->_freeable.empty())//if the list is empty, the user didn't grant enough space for the cache
-	    throw NotEnoughSpaceException();
+	  if(this->_freeable.empty())//if the list is empty, the user didn't grant
+	    throw NotEnoughSpaceException(); //enough space for the cache
 	  image2bfreed = _freeable.front();
-	  int image2bfreed_size = this->_loader.getSize(*image2bfreed);
+	  
 	  //remove an image from the cache
 	  if(!removeImageObject(*image2bfreed.first))
 	    throw RemovalImpossibleException(": removeImageObject.");
-	  if(!removeFromFreeable())
-	    throw RemovalImpossibleException(": removeFromFreeable.");
-	  this->_nb_of_bytes -= image2bfreed_size;
 	}
     }
     
@@ -121,6 +129,8 @@ namespace CacheSystem{
       else
 	throw Unable2ShakePriority();
     }
+    
+    
     
   public:
     CacheOldestUnusedOut(const L &loader,
