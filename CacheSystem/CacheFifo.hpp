@@ -2,12 +2,12 @@
 #define CACHE_FIFO_HPP
 
 #include <string>
-#include <hash_map>
+#include <map>
 #include <queue>
 #include "../LoadingSystem/Loader.hpp"
 #include "NotEnoughSpaceException.hpp"
 #include "RemovalImpossibleException.hpp"
-
+//#include <hash_map>
 //using namespace loader;
 
 
@@ -27,16 +27,16 @@ namespace CacheSystem{
   class CacheFifo {
   private:
     ///////Attributes
-    int      _total_bytes; //Total number of bytes contained in the cache
-    int      _max_bytes;   //Maximum number of bytes
+    int               _total_bytes; //Total number of bytes contained in the cache
+    int               _max_bytes;   //Maximum number of bytes
     
-    int      _nb_of_images;     //Number of images contained in the cache
-    int      _max_nb_of_images; //Maximum number of images allowed
+    int               _nb_of_images;     //Number of images contained in the cache
+    int               _max_nb_of_images; //Maximum number of images allowed
     
-    L   _loader;      //The object that will enable this cache to load files in memory
+    L                 _loader;      //The object that will enable this cache to load files in memory
     
     //Contains all the key/references to a Reference Counter
-    hash_map<K, T, hash<K> >  _image_set;
+    map<K, T>         _image_set;
     queue<const K*>   _freeable;    //Contains all the Reference Counters that are freeable
     
     ///////Methods
@@ -105,20 +105,17 @@ namespace CacheSystem{
      * Must be called by the user interface-side.
      */
     T getImageObject(K &key) throw (NotEnoughSpaceException,
-						RemovalImpossibleException){
-      hash_map<K, T, hash<K> >::iterator index = (this->_image_set).find(key);
-      //hash_map<K, T, hash<K> >::const_iterator index;
-      //this->_image_set.find(key);
-      /*if(index == this->_image_set.end())
-	{//the object-image isn't in the image set
+				    RemovalImpossibleException){
+      map<K, T>::iterator index = (this->_image_set).find(key);
+      if(index == this->_image_set.end())
+	{ //the object-image isn't in the image set
 	  //freeSomeMemory(); //eventually, free some memory
 	  //ASK THE LOADER to fetch the image
-	  Image image = this->_loader.getObject(key);
+	  T image = this->_loader.getObject(key);
 	  addImageObject(key, image); //ADD THE NEW image to the cache
 	  index = this->_image_set.find(key);
-	  }*/
-      //return (T)*index;
-      return 0;
+	}
+      return (*index).second;
     }
   };
 };
