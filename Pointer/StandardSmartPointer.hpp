@@ -1,8 +1,6 @@
 #ifndef StandardSmartPointer_HPP
 #define StandardSmartPointer_HPP
 
-#include "ReferenceCounter.hpp"
-
 namespace Pointer {
 
   template<class RC,class O>
@@ -54,7 +52,7 @@ namespace Pointer {
     /** Nous permet de convertir un SmartPointer en ReferenceCounter.
      * Cette méthode nous permet de convertir n'importe quel type de smartpointer en un autre.
      */
-    operator Pointer::DefaultReferenceCounter<O>() const {
+    operator RC() const {
       return *rc;
     }
 
@@ -79,14 +77,14 @@ namespace Pointer {
     
     /** Operateur ==
      */
-    bool operator == (Pointer::DefaultReferenceCounter<O> *drc) const {
-      return ( rc->getObject() == drc->getObject() );
+    bool operator == (RC &drc) const {
+      return ( rc->getObject() == drc.getObject() );
     }
     
     /** Operateur !=
      */
-    bool operator != (Pointer::DefaultReferenceCounter<O> *drc) const {
-      return ( rc->getObject() != drc->getObject() );
+    bool operator != (RC &drc) const {
+      return ( rc->getObject() != drc.getObject() );
     }
 
     

@@ -1,9 +1,9 @@
 #ifndef TabularSmartPointer_HPP
 #define TabularSmartPointer_HPP
 
-#include "ReferenceCounter.hpp"
-#include "StandardSmartPointer.hpp"
+#include <string>
 
+#include "StandardSmartPointer.hpp"
 
 namespace Pointer {
   
@@ -93,13 +93,13 @@ namespace Pointer {
      * Attention drc doit avoir la taille taille
      * sinon le comportement n'est pas garanti
      */
-    TabularSmartPointer<SP,RC,O>(SP *sp,int taille=0):Pointer::StandardSmartPointer<RC,O>((Pointer::DefaultReferenceCounter<O>)sp),sp(sp),pos(0),taille(taille) {
+    TabularSmartPointer<SP,RC,O>(SP *sp,int taille=0):Pointer::StandardSmartPointer<RC,O>((RC)sp),sp(sp),pos(0),taille(taille) {
       if( taille < 0 ) {
 	delete this;
 	throw InvalidValueException(taille);
       }
       for( int i=0;i<taille;i++)
-	( (Pointer::DefaultReferenceCounter<O>)(sp+i) )->attach();
+	( (RC)(sp+i) )->attach();
     }
 														 
     /** Construit un tableau vide
@@ -115,7 +115,7 @@ namespace Pointer {
     
     virtual ~TabularSmartPointer() {
       for( int i=0;i<size();i++)
-	( (Pointer::DefaultReferenceCounter<O>)(sp+i) )->detach();
+	( (RC)(sp+i) )->detach();
     }
 
     
@@ -134,7 +134,7 @@ namespace Pointer {
     void add(SP *sp) {
       resize(size()+1);
       this->sp[size()-1]=sp;
-      ((Pointer::DefaultReferenceCounter<O>)this->sp)->attach();
+      ((RC)this->sp)->attach();
     }
 
     /** Ajoute un nouvel element en position index
@@ -146,7 +146,7 @@ namespace Pointer {
       for(int i=index;i<size()-1;i++)
 	this->sp[i+1]=this->rc[i];
       sp[index]=sp;
-      ((Pointer::DefaultReferenceCounter<O>)this->sp)->attach();
+      ((RC)this->sp)->attach();
     }
     
     /** Enleve l'element à la position index et diminue la taille du tableau
@@ -157,7 +157,7 @@ namespace Pointer {
       for(int i=index;i<size()-1;i++)
 	this->rc[i]=this->rc[i+1];
       resize(size()-1);
-      ((Pointer::DefaultReferenceCounter<O>)rc)->detach();
+      ((RC)rc)->detach();
     }
     
     /** Retourne le SmartPointer à la position index
@@ -210,7 +210,7 @@ namespace Pointer {
       if( size() != tsp.size() )
 	return false;
       for(int i=0;i<size();i++)
-	if( sp[i] != ((Pointer::DefaultReferenceCounter<O>)tsp[i]) )
+	if( sp[i] != ((RC)tsp[i]) )
 	  return false;
       return true;
     }
@@ -229,12 +229,12 @@ namespace Pointer {
      */
     O & operator [] (int index) {
       testIfIsAllowed(pos+index);
-      return ((Pointer::DefaultReferenceCounter<O>)sp[pos+index])->getObject();
+      return ((RC)sp[pos+index])->getObject();
     }
 
     const O & operator [] (int index) const {
       testIfIsAllowed(pos+index);
-      return ((Pointer::DefaultReferenceCounter<O>)sp[pos+index])->getObject();
+      return ((RC)sp[pos+index])->getObject();
     }
 
 

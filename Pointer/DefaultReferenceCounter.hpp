@@ -1,8 +1,8 @@
 #ifndef DefaultReferenceCounter_HPP
 #define DefaultReferenceCounter_HPP
 
-#include <pthread.h>
 #include <string>
+#include <pthread.h>
 
 namespace Pointer {
 
