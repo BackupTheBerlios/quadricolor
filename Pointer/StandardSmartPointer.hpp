@@ -12,6 +12,9 @@ namespace Pointer {
     
     /****************************/
     /*       Constructeur       */
+    /*                          */
+    /* Equivalent à la notation */
+    /*  * ds pointeurs          */
     /****************************/
     
     /** Constructeur sur ReferenceCounter
@@ -69,15 +72,20 @@ namespace Pointer {
      * Cette méthode nous permet de convertir n'importe quel type de smartpointer en un autre.
      */
     & operator RC() const {
-      return rc;
+      return *rc;
     }
-
+    
     /** Nous permet de convertir un SmartPointer en pointer.
      */
+    & operator O() const {
+      return rc->getObject();
+    }
+
     * operator O() const {
       return &rc->getObject();
     }
 
+    
     /****************************/
     /*  Operateurs d'affectation */
     /****************************/
@@ -141,13 +149,13 @@ namespace Pointer {
     /** Operateur ->
      */
     O * operator -> () {
-      return  rc->getObject();
+      return  &rc->getObject();
     }
 
     /** Operateur -> sans modification de l'objet
      */
     const O * operator -> () const {
-      return  rc->getObject();
+      return  &rc->getObject();
     }
    
   };
