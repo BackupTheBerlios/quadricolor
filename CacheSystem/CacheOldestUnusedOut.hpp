@@ -2,6 +2,7 @@
 #define CACHE_OLDEST_UNUSED_OUT_HPP
 
 #include <string.h>
+#include "Unable2ShakePriority.hpp"
 
 namespace CacheSystem{
   /**
@@ -9,16 +10,6 @@ namespace CacheSystem{
    * K = key which can identify an image-object
    * Loader = the type of the loader that will be used
    */
-  template <class T, class K>
-  typedef hash_map<const K, T, hash<const K> > TypeMap;
-  
-  template <class T, class K>
-  typedef hash_map<const K, T, hash<const K> >::iterator MapIter;
-  
-  template <class K>
-  typedef pair<K*, int> TypePair;
-  
-  
   /**
    * This cache implements a mechanism of cache in which all the image-objects are stored in
    * a sort of priority queue(but the STL's priority queue isn't used). Each image-object
@@ -26,7 +17,7 @@ namespace CacheSystem{
    * which has the highest priority is removed.
    */
   template <class T, class K, class Loader>
-  class CacheOldestUnusedOut: public Cache{
+  class CacheOldestUnusedOut: public CacheSystem::Cache<T, K, Loader>{
   private:
     ///////Attributes
     int      _total_bytes; //Total number of bytes contained in the cache
@@ -36,15 +27,16 @@ namespace CacheSystem{
     int      _max_nb_of_images; //Maximum number of images allowed
     
     Loader   _loader;      //The object that will enable this cache to load files in memory
-    TypeMap  _image_set;   //Contains all the key/references to a Reference Counter
-    list<TypePair> _freeable;    //Contains the key of all the freeable elements
+    //Contains all the key/references to a Reference Counter
+    hash_map<const K, T, hash<const K> >  _image_set;
+    list<pair<K*, int> > _freeable;    //Contains the key of all the freeable elements
     
     ///////Methods
     /**
      * Adds an image to the list of images.
      * Returns true if the operation succeeded, false otherwise.
      */
-    bool addImageObject(const K &key, XXXXXX image) throw (NotEnoughSpaceException){
+    bool addImageObject(const K &key, T/* A VERIFIER */ image) throw (NotEnoughSpaceException){
       this->_image_set[key] = image;
       addToFreeable(key);
       return true;
@@ -64,7 +56,7 @@ namespace CacheSystem{
      * Returns true if the operation succeeded, false otherwise.
      */
     bool addToFreeable(const K &key){
-      TypePair key_priority = TypePair(&key, 0); //Default priority = 0, and we need a pointer
+      pair<K*, int> key_priority = pair<K*, int>(&key, 0); //Default priority = 0, and we need a pointer
       
       //The pairs that are in front of the list are to be freed in priority
       this->_freeable.push_back(key_priority);
@@ -85,7 +77,7 @@ namespace CacheSystem{
      */
     void freeSomeMemory() throw (NotEnoughSpaceException)
     {
-      TypePair image2bfreed;
+      pair<K*, int> image2bfreed;
       
       /* while there isn't enough space, we delete the first image-objects */
       while(_nb_of_images>=_max_nb_of_images || _total_bytes>=_max_bytes)
@@ -109,9 +101,9 @@ namespace CacheSystem{
      */
     void shakePriorities(const K &key) throw (Unable2ShakePriority)
     {
-      list<TypePair>::iterator it;
-      list<TypePair>::iterator end = _freeable.end();
-      list<TypePair>::iterator it_key = end;
+      list<pair<K*, int> >::iterator it;
+      list<pair<K*, int> >::iterator end = _freeable.end();
+      list<pair<K*, int> >::iterator it_key = end;
       
       for(it = _freeable.begin(); it != it_key; it++)
 	{
@@ -139,8 +131,8 @@ namespace CacheSystem{
     }
     
   public:
-    CacheFifo(const Loader &loader):_loader(loader){}
-    ~CacheFifo(){}
+    CacheOldestUnusedOut(const Loader &loader):_loader(loader){}
+    ~CacheOldestUnusedOut(){}
     
     
     /**
@@ -148,7 +140,7 @@ namespace CacheSystem{
      * Must be called by the user interface-side.
      */
     T getImageObject(const K &key)const{
-      MapIter index = this->_image_set.find(key);
+      hash_map<const K, T, hash<const K> >::iterator index = this->_image_set.find(key);
       if(index == _image_set.end())
 	{//the object-image isn't in the image set
 	  freeSomeMemory(); //Free EVENTUALLY some memory
