@@ -6,11 +6,7 @@
 #include <queue>
 #include "../LoadingSystem/Loader.hpp"
 #include "NotEnoughSpaceException.hpp"
-#include "ParametersNotInitialisedException.hpp"
 #include "RemovalImpossibleException.hpp"
-#include "myassert.h"
-//#include <hash_map>
-//using namespace loader;
 
 
 namespace CacheSystem{
@@ -152,6 +148,7 @@ namespace CacheSystem{
 	  T image = this->_loader.getObject(key);
 	  addImageObject(key, image); //ADD THE NEW image to the cache
 	  index = this->_image_set.find(key);
+	  puts("Image chargée");
 	}
       return (*index).second;
     }
