@@ -9,9 +9,9 @@ namespace CacheSystem {
   class CacheReferenceCounter : public Pointer::DefaultReferenceCounter<O> {
   private:
     C * _cache;
-    K * _key;
+    const K * _key;
   public:
-    CacheReferenceCounter<C,K,O>(C &c,K &k,O *object):Pointer::DefaultReferenceCounter<O>(object),_cache(c),_key(k) {}
+    CacheReferenceCounter<C,K,O>(C *c,const K &k,O &object):Pointer::DefaultReferenceCounter<O>(object),_cache(c),_key(&k) {}
     
     virtual ~CacheReferenceCounter() {}
     
@@ -19,11 +19,9 @@ namespace CacheSystem {
       _counter--;
       if( _counter <= 0 ) {
 	_counter++;
-	_cache->addToFreeAble(_key);
+	_cache->addToFreeable(_key);
       }
     }
   };
 };
-
 #endif
-

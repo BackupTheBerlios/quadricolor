@@ -47,12 +47,10 @@ namespace CacheSystem{
      * Adds an image to the list of images.
      * Returns true if the operation succeeded, false otherwise.
      */
-    bool addImageObject(const K &key, const T &image){
+    void addImageObject(const K &key, const T &image){
       int image_size = this->_loader.getSize(key);
       this->_image_set[key] = image;
       addToFreeable(&key);
-      K image2bfreed = *(this->_freeable.back());
-      int image2bfreed_size = this->_loader.getSize(image2bfreed);
       this->_nb_of_images++;
       this->_nb_of_bytes += image_size;
     }
@@ -62,7 +60,8 @@ namespace CacheSystem{
      * Returns true if the operation succeeded, false otherwise.
      */
     bool removeImageObject(const K *key){
-      if(this->_image_set.erase(*key)>=1) return true;
+      if(this->_image_set.erase(*key)>=1)
+	return true;
       return false;
     }
     
@@ -166,10 +165,10 @@ namespace CacheSystem{
       if(index == this->_image_set.end())
 	{ //the object-image isn't in the image set
 	  //ASK THE LOADER to fetch the image
-	  Pointer::StandardSmartPointer<CacheReferenceCounter<CacheFifo,T>, T> image ( new CacheReferenceCounter<CacheFifo,T>(this, this->_loader.getObject(key) ) );
+	  Pointer::StandardSmartPointer<CacheReferenceCounter<CacheFifo,K,T>, T> image ( new CacheReferenceCounter<CacheFifo,K,T>(this,key, this->_loader.getObject(key) ) );
 	  try{
 	    freeSomeMemory(this->_loader.getSize(key)); //eventually, free some memory
-	    addImageObject(key, image); //ADD THE NEW image to the cache
+	    addImageObject(key, *image); //ADD THE NEW image to the cache
 	    index = this->_image_set.find(key);
 	  }catch(NotEnoughSpaceException e)
 	    {cerr<<e.getMessage()<<"\nImage "<<key<<" hasn't been added in the cache."; return image;}

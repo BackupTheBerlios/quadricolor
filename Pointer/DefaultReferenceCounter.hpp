@@ -24,7 +24,7 @@ namespace Pointer {
   public:
     /** Initialise le ReferenceCounter et cree un mutex
      */
-    DefaultReferenceCounter<O>(O *o):_counter(1),_object(o) {
+    DefaultReferenceCounter<O>(O &o):_counter(1),_object(&o) {
       pthread_mutex_init(mut,NULL);
     }
 
