@@ -21,17 +21,28 @@ int main(int argc, char ** argv)
   string file_name;
   cout << file_name << endl;
   CacheFifo<Image, string, Loader<string> > cache =
-    CacheFifo<Image, string, Loader<string> >(l, 7000, 3);
+    CacheFifo<Image, string, Loader<string> >(l, 70000, 3);
   Image pic;
+  string present_files;
+  
   try{
     for(int i=1; i<argc; i++){
+      cout <<endl;
       file_name = string(argv[i]);
       pic = cache.getImageObject(file_name);
       cout << "The size of the image " << file_name << " is " << l.getSize(file_name) << endl;
+      cout <<"Les fichiers contenus dans le cache:" <<endl;
+      cache.initIterator();
+      while((present_files=cache.getEachKeyStored())!="")
+	cout<<present_files <<endl;      
       //pic.display();
     }
   }
   catch( ImageNotFoundException &e){ cout << e.getMessage() << endl;}
   catch( NotEnoughSpaceException &e){ cout << e.getMessage() << endl;}
   catch( RemovalImpossibleException &e){ cout << e.getMessage() << endl;}
+  cout <<endl <<"Les fichiers contenus dans le cache:" <<endl;
+  cache.initIterator();
+  while((present_files=cache.getEachKeyStored())!="")
+    cout<<present_files <<endl;      
 }
