@@ -1,5 +1,5 @@
-#ifndef ReferenceCounter_HPP
-#define ReferenceCounter_HPP
+#ifndef DefaultReferenceCounter_HPP
+#define DefaultReferenceCounter_HPP
 
 #include <pthread.h>
 #include <string>

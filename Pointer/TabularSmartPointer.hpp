@@ -4,13 +4,6 @@
 #include "ReferenceCounter.hpp"
 #include "StandardSmartPointer.hpp"
 
-/** On separe TabularSmartPointer et StandardSmartPointer pour des raisons de conception.
- * En effet on ne peut pas utiliserl'operateur [] en tant que constructeur, on est obligé d'utiliser des constructeurs classiques, qui sont lourd à utiliser dans le cas d'un StandardSmartPointer simple.
- * On a enlever de StandardSmartPointer l'opérateur [] et tout les opérateurs spécifiques aux tableaux pour des raisons de securité.
- *
- * Le StandardSmartPointer intégre des méthodes pour gerer l'accès concurrent sur l'objet wrappé.
-*/
-
 
 namespace Pointer {
   
