@@ -4,21 +4,14 @@
 namespace Pointer {
 
   /** Ce SmartPointer contient les opérateurs de base *, -> des pointeurs.
-   * Tout les opérateurs permettant de manipuler les adresses on été retirés
-pour des raisons de sécurité.
-   * Le StandardSmartPointer est un pointeur simple qui ne permet pas de créer
-des tableaux.
-   * Ces opérateurs sont disponibles dans TabularSmartPointer où l'on a plus
-d'information sur la mémoire.
+   * Tout les opérateurs permettant de manipuler les adresses on été retirés pour des raisons de sécurité.
+   * Le StandardSmartPointer est un pointeur simple qui ne permet pas de créer des tableaux.
+   * Ces opérateurs sont disponibles dans TabularSmartPointer où l'on a plus d'information sur la mémoire.
    *
-   * Ce StandardSmartPointer offre à l'utilisateur la possibilité de gerer les
-accès concurrents à l'aide d'un mutex (voir lock(), trylock() et unlock()).
+   * Ce StandardSmartPointer offre à l'utilisateur la possibilité de gerer les accès concurrents à l'aide d'un mutex (voir lock(), trylock() et unlock()).
    *
-   * On a la possibilté de recuperer le ReferenceCounter encapsulé par
-l'opérateur de conversion.
-   * Lorsque des méthodes sont disponibles à la fois dans le
-StandardSmartPointer et dans le ReferenceCounter, il est conseillé de choisir
-celles du StandardSmartPointer.
+   * On a la possibilté de recuperer le ReferenceCounter encapsulé par l'opérateur de conversion.
+   * Lorsque des méthodes sont disponibles à la fois dans le StandardSmartPointer et dans le ReferenceCounter, il est conseillé de choisir celles du StandardSmartPointer.
    */
   template<class RC,class O>
   class StandardSmartPointer {
@@ -165,8 +158,8 @@ smartpointer en un autre.
     /** Renvoit directement l'objet sur lequel pointe le Smartpointer par
 l'intermediaire du ReferenceCounter.
      * Fonctionne comme l'operateur * des pointeurs.
-     * Attention : pas de verification automatique d'accès concurrent, c'est à
-l'utilisateur de le verifier avec les méthodes lock(),...
+<<<<<<< StandardSmartPointer.hpp
+     * Attention : pas de verification automatique d'accès concurrent, c'est à l'utilisateur de le verifier avec les méthodes lock(),...
      */
     O & operator * () {
       return rc->getObject();
@@ -176,24 +169,21 @@ l'utilisateur de le verifier avec les méthodes lock(),...
 l'intermediaire du ReferenceCounter.
      * Fonctionne comme l'operateur * des pointeurs.
      * A utiliser lorsque le pointeur n'est pas modifié.
-     * Attention : pas de verification automatique d'accès concurrent, c'est à
-l'utilisateur de le verifier avec les méthodes lock(),...
+     * Attention : pas de verification automatique d'accès concurrent, c'est à l'utilisateur de le verifier avec les méthodes lock(),...
      */
     const O & operator * () const {
       return rc->getObject();
     }
     
     /** Operateur ->
-     * Attention : pas de verification automatique d'accès concurrent, c'est à
-l'utilisateur de le verifier avec les méthodes lock(),...
+     * Attention : pas de verification automatique d'accès concurrent, c'est à l'utilisateur de le verifier avec les méthodes lock(),...
      */
     O * operator -> () {
       return  &rc->getObject();
     }
-
+    
     /** Operateur -> sans modification de l'objet
-     * Attention : pas de verification automatique d'accès concurrent, c'est à
-l'utilisateur de le verifier avec les méthodes lock(),...
+     * Attention : pas de verification automatique d'accès concurrent, c'est à l'utilisateur de le verifier avec les méthodes lock(),...
      */
     const O * operator -> () const {
       return  &rc->getObject();
@@ -204,4 +194,3 @@ l'utilisateur de le verifier avec les méthodes lock(),...
 };
 
 #endif
-

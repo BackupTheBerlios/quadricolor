@@ -12,8 +12,7 @@ namespace Pointer {
   private :
     string _error_value;
   public:
-    ArrayIndexOutOfBoundsException(string
-error_value=string("")):_error_value(error_value){}
+    ArrayIndexOutOfBoundsException(string error_value=string("")):_error_value(error_value){}
     ArrayIndexOutOfBoundsException(int error_value) {
       char tmp[20];
       sprintf(tmp,"%d",error_value);
@@ -24,4 +23,3 @@ error_value=string("")):_error_value(error_value){}
 };
 
 #endif
-

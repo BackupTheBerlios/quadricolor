@@ -16,4 +16,3 @@ error_location=string("")):_error_location(error_location){}
 };
   
 #endif
-
