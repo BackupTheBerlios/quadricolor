@@ -1,0 +1,8 @@
+
+
+g++  -c -I/usr/local/share/qt/include -pipe -fno-exceptions -O3 -Wall -Wpointer-arith -Wwrite-strings -Wmissing-prototypes   -o OpenFile.o OpenFile.cpp
+g++  -c -I/usr/local/share/qt/include -pipe -fno-exceptions -O3 -Wall -Wpointer-arith -Wwrite-strings -Wmissing-prototypes   -o Menu.o Menu.cpp
+/usr/bin/moc OpenFile.hpp -o mocOpenFile.cpp
+g++  -c -I/usr/local/share/qt/include -pipe -fno-exceptions -O3 -Wall -Wpointer-arith -Wwrite-strings -Wmissing-prototypes   -o mocOpenFile.o mocOpenFile.cpp
+g++ -L/usr/local/lib    -o ./Menu Menu.o OpenFile.o mocOpenFile.o  -lqt  -L/usr/X11R6/lib -I/usr/X11R6/include  -lSM -lICE -lXft -L/usr/lib -lGLU -lGL -lXmu -lpthread -lz -ljpeg -lmng -ljpeg  -lXext -lgcc -lX11 -lm
+
