@@ -75,3 +75,6 @@ Lors de l'utilisation d'un Smart Pointeur par au moins 2 threads (concurrence), 
 {\policecommande \\void *p;\\SmartPointer sp1(p);// faut'il locker à la construction la ressource ?\\void *g=*sp1;//Dans ce cas plus de contrôle sir l'objet}
 
 \subsubsection{TabularSmartPointer}
+On a séparé les 2 classes, parce qu'on a jugé inutile et dangereux d'utiliser les fonctionalitées d'un tableau lorsque le Smart Pointer n'est pas alloué pour être un tableau. 
+
+

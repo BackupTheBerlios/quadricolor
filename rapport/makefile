@@ -1,9 +1,8 @@
-rapport: rapportC++.dvi
-	dvips $+ -o rapportC++.ps
+BIN=1
 
-dvi: rapportC++.tex
+$(BIN):rapportC++.tex
 	latex $+
-
-gv: rapportC++.ps
-	gv $+ &
+	latex $+
+	dvips rapportC++.dvi -o rapportC++.ps
+	gv rapportC++.ps &
 
